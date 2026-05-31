@@ -1,14 +1,14 @@
 {
-  "name": "kernel-development-practice",
+  "name": "kernel-development-skills",
   "interface": {
-    "displayName": "Kernel Development Practice"
+    "displayName": "Kernel Development Skills"
   },
   "plugins": [
     {
-      "name": "kernel-development-practice",
+      "name": "kernel-development-skills",
       "source": {
         "source": "local",
-        "path": "./plugins/kernel-development-practice"
+        "path": "./plugins/kernel-development-skills"
       },
       "policy": {
         "installation": "AVAILABLE",

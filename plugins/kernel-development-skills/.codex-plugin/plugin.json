@@ -1,5 +1,5 @@
 {
-  "name": "kernel-development-practice",
+  "name": "kernel-development-skills",
   "version": "0.1.0",
   "description": "Linux kernel development, debugging, testing, review, devicetree, driver, stable, and vendor/LTS workflows packaged as an Agent Skill.",
   "author": {
@@ -19,9 +19,9 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Kernel Development Practice",
+    "displayName": "Kernel Development Skills",
     "shortDescription": "Linux kernel workflow, debug, and test practice",
-    "longDescription": "Use Kernel Development Practice for Linux kernel and kernel-adjacent work: driver changes, Kconfig, devicetree bindings and DTS, debugging, tracing, CI failures, KUnit, kselftest, stable and regression handling, maintainer routing, and vendor/LTS maintenance.",
+    "longDescription": "Use Kernel Development Skills for Linux kernel and kernel-adjacent work: driver changes, Kconfig, devicetree bindings and DTS, debugging, tracing, CI failures, KUnit, kselftest, stable and regression handling, maintainer routing, and vendor/LTS maintenance.",
     "developerName": "utsavbalar1231",
     "category": "Developer Tools",
     "capabilities": [

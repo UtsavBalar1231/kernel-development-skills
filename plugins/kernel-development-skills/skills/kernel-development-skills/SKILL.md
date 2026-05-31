@@ -1,9 +1,9 @@
 ---
-name: kernel-development-practice
+name: kernel-development-skills
 description: Use when working on Linux kernel or kernel-adjacent changes, including drivers, Kconfig, defconfig, DTS/devicetree bindings, kernel debugging, tracing, CI failures, KUnit/kselftest, patch review, maintainer routing, stable/regression fixes, or vendor/LTS kernel maintenance. Also use for RK3576/Lapis vendor kernel work.
 ---
 
-# Kernel Development Practice
+# Kernel Development Skills
 
 ## Overview
 
@@ -58,8 +58,8 @@ Use this skill to make kernel changes with the same discipline expected by upstr
 Use scripts when they save repeated reasoning or catch local footguns:
 
 ```bash
-python3 /path/to/kernel-development-practice/scripts/triage_kernel_change.py [changed paths...]
-python3 /path/to/kernel-development-practice/scripts/check_lapis_guardrails.py [changed paths...]
+python3 /path/to/kernel-development-skills/scripts/triage_kernel_change.py [changed paths...]
+python3 /path/to/kernel-development-skills/scripts/check_lapis_guardrails.py [changed paths...]
 ```
 
 `triage_kernel_change.py` emits a path-based checklist with references and likely checks. `check_lapis_guardrails.py` fails on forbidden Lapis SoC DTS edits and warns on shared defconfig/direct-make hazards when the target repo matches that board family.
@@ -71,8 +71,8 @@ Prefer local docs in the checked-out kernel because vendor trees can differ from
 If `references/doc-routes.md` or generated `assets/kernel-doc-index.jsonl` is stale or missing, regenerate both from the kernel root:
 
 ```bash
-python3 /path/to/kernel-development-practice/scripts/index_kernel_docs.py \
+python3 /path/to/kernel-development-skills/scripts/index_kernel_docs.py \
   /path/to/kernel-root \
-  /path/to/kernel-development-practice/references/doc-routes.md \
-  --jsonl /path/to/kernel-development-practice/assets/kernel-doc-index.jsonl
+  /path/to/kernel-development-skills/references/doc-routes.md \
+  --jsonl /path/to/kernel-development-skills/assets/kernel-doc-index.jsonl
 ```

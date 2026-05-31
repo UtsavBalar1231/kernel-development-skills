@@ -3,7 +3,7 @@
 The portable artifact is the Agent Skill at:
 
 ```text
-plugins/kernel-development-practice/skills/kernel-development-practice/
+plugins/kernel-development-skills/skills/kernel-development-skills/
 ```
 
 Use native plugin marketplaces where available, and fall back to Agent Skills or
@@ -15,15 +15,15 @@ Use the repo-local Codex marketplace:
 
 ```bash
 codex plugin marketplace add "$PWD"
-codex plugin add kernel-development-practice@kernel-development-practice
+codex plugin add kernel-development-skills@kernel-development-skills
 ```
 
 For direct personal-skill use:
 
 ```bash
 mkdir -p ~/.agents/skills
-ln -s "$PWD/plugins/kernel-development-practice/skills/kernel-development-practice" \
-  ~/.agents/skills/kernel-development-practice
+ln -s "$PWD/plugins/kernel-development-skills/skills/kernel-development-skills" \
+  ~/.agents/skills/kernel-development-skills
 ```
 
 ## Claude Code
@@ -31,16 +31,16 @@ ln -s "$PWD/plugins/kernel-development-practice/skills/kernel-development-practi
 Use the repo-local Claude Code marketplace:
 
 ```text
-/plugin marketplace add /path/to/kernel-development-practice-plugin
-/plugin install kernel-development-practice@kernel-development-practice
+/plugin marketplace add /path/to/kernel-development-skills
+/plugin install kernel-development-skills@kernel-development-skills
 ```
 
 For direct skill use:
 
 ```bash
 mkdir -p ~/.claude/skills
-ln -s "$PWD/plugins/kernel-development-practice/skills/kernel-development-practice" \
-  ~/.claude/skills/kernel-development-practice
+ln -s "$PWD/plugins/kernel-development-skills/skills/kernel-development-skills" \
+  ~/.claude/skills/kernel-development-skills
 ```
 
 ## OpenCode
@@ -49,8 +49,8 @@ OpenCode can discover `.agents/skills`, `.claude/skills`, and `.opencode/skills`
 
 ```bash
 mkdir -p ~/.config/opencode/skills
-ln -s "$PWD/plugins/kernel-development-practice/skills/kernel-development-practice" \
-  ~/.config/opencode/skills/kernel-development-practice
+ln -s "$PWD/plugins/kernel-development-skills/skills/kernel-development-skills" \
+  ~/.config/opencode/skills/kernel-development-skills
 ```
 
 ## GitHub Copilot
@@ -60,8 +60,8 @@ repository-local install:
 
 ```bash
 mkdir -p .github/skills
-ln -s "$PWD/plugins/kernel-development-practice/skills/kernel-development-practice" \
-  .github/skills/kernel-development-practice
+ln -s "$PWD/plugins/kernel-development-skills/skills/kernel-development-skills" \
+  .github/skills/kernel-development-skills
 ```
 
 For broad project instructions, keep a concise `AGENTS.md` in the target repo
@@ -76,7 +76,7 @@ instructions:
 ```markdown
 # Gemini Context
 
-Use the kernel-development-practice Agent Skill for kernel work.
+Use the kernel-development-skills Agent Skill for kernel work.
 
 @./AGENTS.md
 ```

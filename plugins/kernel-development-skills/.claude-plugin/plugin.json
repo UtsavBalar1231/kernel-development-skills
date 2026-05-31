@@ -1,6 +1,6 @@
 {
-  "name": "kernel-development-practice",
-  "displayName": "Kernel Development Practice",
+  "name": "kernel-development-skills",
+  "displayName": "Kernel Development Skills",
   "version": "0.1.0",
   "description": "Linux kernel development, debugging, testing, review, devicetree, driver, stable, and vendor/LTS workflows packaged as an Agent Skill.",
   "author": {

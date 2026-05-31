@@ -48,7 +48,7 @@ def should_scan_for_direct_make(path: str) -> bool:
         return False
     if path in {"Makefile", "Kbuild", "Kconfig"} or path.endswith("/Kconfig"):
         return False
-    if "/.agents/skills/kernel-development-practice/" in path:
+    if "/.agents/skills/kernel-development-skills/" in path:
         return False
     return True
 
