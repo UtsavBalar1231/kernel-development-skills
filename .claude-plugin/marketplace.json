@@ -10,8 +10,8 @@
     {
       "name": "kernel-development-skills",
       "source": "./plugins/kernel-development-skills",
-      "description": "Linux kernel development, debugging, testing, review, devicetree, driver, stable, and vendor/LTS workflows.",
-      "version": "0.1.0",
+      "description": "Linux kernel driver API, debugging, testing, review, devicetree, stable, and vendor/LTS workflows.",
+      "version": "0.2.0",
       "author": {
         "name": "utsavbalar1231",
         "email": "utsavbalar1231@gmail.com"

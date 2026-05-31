@@ -16,7 +16,9 @@ Use this skill to make kernel changes with the same discipline expected by upstr
 3. Determine the work type and load only the needed reference:
    - Patch/review/upstream/stable/regression: `references/kernel-workflow.md`
    - Debugging, tracing, CI, tests, sanitizers: `references/debugging-testing.md`
-   - Drivers, DTS, bindings, Kconfig, subsystem APIs: `references/device-tree-drivers.md`
+   - Driver authoring/API choices/lifetime: `references/driver-api-cookbook.md`
+   - Driver review/maintenance/backports: `references/driver-review-checklists.md`
+   - DTS, bindings, Kconfig, subsystem routing: `references/device-tree-drivers.md`
    - RK3576/Lapis vendor work: `references/lapis-rk3576.md`
    - Advanced tools, fuzzing, trace pipelines, patch tooling: `references/advanced-tooling.md`
    - CI failures, KernelCI/LAVA/TuxSuite, regression reports: `references/ci-regression.md`
@@ -32,6 +34,12 @@ Use this skill to make kernel changes with the same discipline expected by upstr
 4. **Implementation**: follow existing APIs and locking/lifetime patterns. Do not invent helpers unless they remove real duplication or make failure paths safer.
 5. **Validation**: run style/static checks, targeted build, tests, boot/runtime checks, and log review appropriate to the affected subsystem.
 6. **Review**: inspect diff, commit message, tags, maintainers, and regression/stable implications before declaring work complete.
+
+## Technical Driver Work
+
+For driver creation or non-trivial driver edits, load `references/driver-api-cookbook.md` before choosing APIs. It covers probe/remove structure, `devm_*`, `dev_err_probe()`, MMIO, regmap, GPIO descriptors, regulators, clocks, resets, IRQ/workqueue context, DMA, runtime PM, subsystem selection, and deprecated APIs.
+
+For driver maintenance, review, regression fixes, or backports, load `references/driver-review-checklists.md`. It turns the cookbook into pre-edit, review, validation, and vendor/LTS checklists.
 
 ## Non-Negotiables
 
@@ -60,9 +68,10 @@ Use scripts when they save repeated reasoning or catch local footguns:
 ```bash
 python3 /path/to/kernel-development-skills/scripts/triage_kernel_change.py [changed paths...]
 python3 /path/to/kernel-development-skills/scripts/check_lapis_guardrails.py [changed paths...]
+python3 /path/to/kernel-development-skills/scripts/check_kernel_api_patterns.py [changed paths...]
 ```
 
-`triage_kernel_change.py` emits a path-based checklist with references and likely checks. `check_lapis_guardrails.py` fails on forbidden Lapis SoC DTS edits and warns on shared defconfig/direct-make hazards when the target repo matches that board family.
+`triage_kernel_change.py` emits a path-based checklist with references and likely checks. `check_lapis_guardrails.py` fails on forbidden Lapis SoC DTS edits and warns on shared defconfig/direct-make hazards when the target repo matches that board family. `check_kernel_api_patterns.py` is advisory only; use kernel-native tools and review judgment for final decisions.
 
 ## Local Documentation
 

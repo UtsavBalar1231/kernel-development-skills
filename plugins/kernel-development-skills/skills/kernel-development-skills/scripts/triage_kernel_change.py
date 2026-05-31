@@ -116,11 +116,35 @@ def classify(raw_path: str) -> Triage:
 
     if path.startswith("drivers/"):
         triage.kind = "kernel driver"
-        refs.update({"references/device-tree-drivers.md", "references/debugging-testing.md"})
+        refs.update(
+            {
+                "references/device-tree-drivers.md",
+                "references/driver-api-cookbook.md",
+                "references/driver-review-checklists.md",
+                "references/debugging-testing.md",
+            }
+        )
         add_unique(checks, "scripts/checkpatch.pl --strict <patch-file>")
+        add_unique(checks, "python3 scripts/check_kernel_api_patterns.py " + path)
         add_unique(checks, kmake_target("<focused-target>"))
         add_unique(checks, "runtime probe/log validation on hardware or suitable emulator")
-        add_unique(notes, "Review resource lifetime, devm use, PM, locking, and error paths.")
+        add_unique(
+            notes,
+            "Review API choice, resource lifetime, devm use, PM, locking, IRQ context, DMA, and error paths.",
+        )
+
+    if path.startswith("include/linux/"):
+        triage.kind = "kernel internal API"
+        refs.update(
+            {
+                "references/driver-api-cookbook.md",
+                "references/driver-review-checklists.md",
+                "references/kernel-workflow.md",
+            }
+        )
+        add_unique(checks, "scripts/checkpatch.pl --strict <patch-file>")
+        add_unique(checks, kmake_target("<focused-target>"))
+        add_unique(notes, "Internal API changes need call-site review and subsystem maintainer routing.")
 
     if name == "Kconfig" or path.startswith("arch/arm64/configs/") or path.endswith(".config"):
         triage.kind = "Kconfig or kernel config"
@@ -139,7 +163,13 @@ def classify(raw_path: str) -> Triage:
 
     if path.startswith("include/uapi/") or path.startswith("Documentation/ABI/"):
         triage.kind = "kernel userspace ABI"
-        refs.update({"references/kernel-workflow.md", "references/device-tree-drivers.md"})
+        refs.update(
+            {
+                "references/kernel-workflow.md",
+                "references/device-tree-drivers.md",
+                "references/driver-review-checklists.md",
+            }
+        )
         add_unique(checks, "update ABI documentation and add/adjust a userspace-facing test when feasible")
         add_unique(notes, "UAPI, sysfs, ioctl, netlink, and documented ABI need compatibility review.")
 
@@ -163,12 +193,12 @@ def render(paths: list[str]) -> str:
         )
         return "\n".join(lines)
 
-        lines.extend(
-            [
-                "Read nearest repo guidance first. Use the repo-approved build wrapper when present; otherwise translate checks to upstream `make` targets.",
-                "",
-            ]
-        )
+    lines.extend(
+        [
+            "Read nearest repo guidance first. Use the repo-approved build wrapper when present; otherwise translate checks to upstream `make` targets.",
+            "",
+        ]
+    )
     for path in paths:
         triage = classify(path)
         lines.append(f"## `{Path(path).as_posix().lstrip('./')}`")

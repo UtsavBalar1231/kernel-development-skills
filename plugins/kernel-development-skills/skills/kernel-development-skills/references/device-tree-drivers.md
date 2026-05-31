@@ -35,6 +35,9 @@ Local docs to check first:
 - `Documentation/admin-guide/abi.rst`
 - `Documentation/ABI/`
 
+For concrete driver API choices, load `driver-api-cookbook.md`. For driver
+maintenance and review pressure checks, load `driver-review-checklists.md`.
+
 Current upstream references:
 
 - https://docs.kernel.org/devicetree/bindings/writing-schema.html
@@ -100,12 +103,9 @@ Before editing:
 
 Implementation rules:
 
-- Probe should fail loudly enough to diagnose real hardware/configuration errors, but use `dev_err_probe()` for deferred probe paths.
-- Order resources so failure and remove paths are natural: regulators/clocks/resets/pinctrl before device enable, IRQs after state is initialized.
-- Use runtime PM when the hardware has meaningful idle states and the subsystem expects it.
-- Avoid sleeping in atomic context and check locking around callbacks.
-- Use endian, alignment, and DMA APIs instead of open-coding assumptions.
-- Do not expose debugfs/sysfs knobs as ABI unless they are documented and supportable.
+- Load `driver-api-cookbook.md` before choosing APIs or changing driver lifetime, PM, IRQ, DMA, GPIO, regulator, clock, reset, MMIO, or regmap behavior.
+- Load `driver-review-checklists.md` before final review, backporting, or regression handoff.
+- Keep binding, driver, DTS, config, and test changes split when they have different review owners.
 
 ## Kconfig And Build Integration
 

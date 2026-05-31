@@ -1,9 +1,9 @@
 # Kernel Development Skills
 
 Portable Agent Skill and plugin package for Linux kernel development skills:
-drivers, Kconfig, devicetree bindings and DTS, debugging, tracing, CI failures,
-KUnit, kselftest, regression and stable handling, maintainer routing, and
-vendor/LTS kernel maintenance.
+driver API choices, Kconfig, devicetree bindings and DTS, debugging, tracing,
+CI failures, KUnit, kselftest, regression and stable handling, maintainer
+routing, and vendor/LTS kernel maintenance.
 
 The reusable skill lives at:
 
@@ -74,6 +74,8 @@ python3 ~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
 claude plugin validate plugins/kernel-development-skills
 claude plugin validate .
 python3 -m py_compile plugins/kernel-development-skills/skills/kernel-development-skills/scripts/*.py
+python3 plugins/kernel-development-skills/skills/kernel-development-skills/scripts/check_kernel_api_patterns.py \
+  --help >/dev/null
 ```
 
 Research provenance from the skill creation pass is kept in
