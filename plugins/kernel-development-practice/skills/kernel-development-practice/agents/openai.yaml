@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kernel Development Practice"
+  short_description: "Linux kernel workflow, debug, and test practice"
+  default_prompt: "Use $kernel-development-practice to plan and verify a Linux kernel driver or device-tree change."

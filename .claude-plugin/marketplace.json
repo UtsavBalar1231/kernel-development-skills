@@ -1,0 +1,32 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "kernel-development-practice",
+  "description": "Kernel Development Practice plugin marketplace for Claude Code.",
+  "owner": {
+    "name": "utsavbalar1231",
+    "email": "utsavbalar1231@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "kernel-development-practice",
+      "source": "./plugins/kernel-development-practice",
+      "description": "Linux kernel development, debugging, testing, review, devicetree, driver, stable, and vendor/LTS workflows.",
+      "version": "0.1.0",
+      "author": {
+        "name": "utsavbalar1231",
+        "email": "utsavbalar1231@gmail.com"
+      },
+      "license": "MIT",
+      "category": "development",
+      "tags": [
+        "linux-kernel",
+        "devicetree",
+        "drivers",
+        "debugging",
+        "testing",
+        "stable"
+      ],
+      "strict": true
+    }
+  ]
+}

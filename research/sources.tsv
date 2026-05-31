@@ -1,0 +1,144 @@
+url	type	date	credibility	decision	note
+https://docs.kernel.org/	official docs	current	primary	promote	Kernel documentation root
+https://docs.kernel.org/process/submitting-patches.html	official docs	current	primary	promote	Patch submission rules
+https://docs.kernel.org/process/submit-checklist.html	official docs	current	primary	promote	Pre-submission checklist
+https://docs.kernel.org/process/coding-style.html	official docs	current	primary	promote	Kernel coding style
+https://docs.kernel.org/process/deprecated.html	official docs	current	primary	promote	Deprecated interfaces and patterns
+https://docs.kernel.org/process/handling-regressions.html	official docs	current	primary	promote	Regression handling and regzbot
+https://docs.kernel.org/process/stable-kernel-rules.html	official docs	current	primary	promote	Stable submission rules
+https://docs.kernel.org/process/maintainer-handbooks.html	official docs	current	primary	promote	Maintainer handbook routing
+https://docs.kernel.org/process/email-clients.html	official docs	current	primary	promote	Email client caveats
+https://docs.kernel.org/process/applying-patches.html	official docs	current	primary	promote	Patch application context
+https://docs.kernel.org/process/debugging/userspace_debugging_guide.html	official docs	current	primary	promote	Userspace-driven kernel debugging
+https://docs.kernel.org/admin-guide/reporting-issues.html	official docs	current	primary	promote	Issue reporting evidence
+https://docs.kernel.org/admin-guide/reporting-regressions.html	official docs	current	primary	promote	User regression reporting
+https://docs.kernel.org/admin-guide/bug-hunting.html	official docs	current	primary	promote	Bug hunting workflow
+https://docs.kernel.org/admin-guide/bug-bisect.html	official docs	current	primary	promote	Bisect guidance
+https://docs.kernel.org/admin-guide/tainted-kernels.html	official docs	current	primary	promote	Taint flags
+https://docs.kernel.org/admin-guide/dynamic-debug-howto.html	official docs	current	primary	promote	Dynamic debug controls
+https://docs.kernel.org/admin-guide/ramoops.html	official docs	current	primary	promote	Persistent crash logs
+https://docs.kernel.org/admin-guide/kdump/index.html	official docs	current	primary	promote	Kdump crash capture
+https://docs.kernel.org/dev-tools/testing-overview.html	official docs	current	primary	promote	Kernel test taxonomy
+https://docs.kernel.org/dev-tools/kunit/index.html	official docs	current	primary	promote	KUnit overview
+https://docs.kernel.org/dev-tools/kunit/start.html	official docs	current	primary	promote	KUnit start guide
+https://docs.kernel.org/dev-tools/kunit/usage.html	official docs	current	primary	promote	KUnit usage patterns
+https://docs.kernel.org/dev-tools/kselftest.html	official docs	current	primary	promote	kselftest usage
+https://docs.kernel.org/dev-tools/ktap.html	official docs	current	primary	promote	KTAP output
+https://docs.kernel.org/dev-tools/checkpatch.html	official docs	current	primary	promote	checkpatch semantics
+https://docs.kernel.org/dev-tools/sparse.html	official docs	current	primary	promote	Sparse static analysis
+https://docs.kernel.org/dev-tools/coccinelle.html	official docs	current	primary	promote	Semantic patching
+https://docs.kernel.org/dev-tools/gdb-kernel-debugging.html	official docs	current	primary	promote	GDB vmlinux helpers
+https://docs.kernel.org/dev-tools/kgdb.html	official docs	current	primary	promote	KGDB/KDB
+https://docs.kernel.org/dev-tools/kasan.html	official docs	current	primary	promote	KASAN memory bugs
+https://docs.kernel.org/dev-tools/kmsan.html	official docs	current	primary	promote	KMSAN uninitialized memory
+https://docs.kernel.org/dev-tools/kcsan.html	official docs	current	primary	promote	KCSAN races
+https://docs.kernel.org/dev-tools/kfence.html	official docs	current	primary	promote	KFENCE lightweight memory detection
+https://docs.kernel.org/dev-tools/kmemleak.html	official docs	current	primary	promote	Leak detection
+https://docs.kernel.org/dev-tools/ubsan.html	official docs	current	primary	promote	UBSAN
+https://docs.kernel.org/dev-tools/kcov.html	official docs	current	primary	watch	Coverage/fuzzing support
+https://docs.kernel.org/dev-tools/gcov.html	official docs	current	primary	watch	Coverage support
+https://docs.kernel.org/trace/ftrace.html	official docs	current	primary	promote	Ftrace operation
+https://docs.kernel.org/trace/events.html	official docs	current	primary	promote	Trace events
+https://docs.kernel.org/trace/kprobes.html	official docs	current	primary	promote	Kprobes
+https://docs.kernel.org/trace/kprobetrace.html	official docs	current	primary	watch	Kprobe trace interface
+https://docs.kernel.org/trace/fprobe.html	official docs	current	primary	watch	Fprobe tracing
+https://docs.kernel.org/trace/histogram.html	official docs	current	primary	watch	Hist triggers
+https://docs.kernel.org/trace/osnoise-tracer.html	official docs	current	primary	watch	Latency/noise tracing
+https://docs.kernel.org/trace/timerlat-tracer.html	official docs	current	primary	watch	Timer latency tracing
+https://docs.kernel.org/fault-injection/fault-injection.html	official docs	current	primary	promote	Fault injection knobs
+https://docs.kernel.org/devicetree/index.html	official docs	current	primary	promote	Devicetree docs root
+https://docs.kernel.org/devicetree/usage-model.html	official docs	current	primary	promote	DT usage model
+https://docs.kernel.org/devicetree/bindings/writing-schema.html	official docs	current	primary	promote	YAML binding schema
+https://docs.kernel.org/devicetree/bindings/submitting-patches.html	official docs	current	primary	promote	Binding submission
+https://docs.kernel.org/devicetree/bindings/dts-coding-style.html	official docs	current	primary	promote	DTS style
+https://docs.kernel.org/devicetree/of_unittest.html	official docs	current	primary	watch	OF unit tests
+https://docs.kernel.org/driver-api/index.html	official docs	current	primary	promote	Driver APIs root
+https://docs.kernel.org/driver-api/driver-model/index.html	official docs	current	primary	promote	Driver model
+https://docs.kernel.org/driver-api/basics.html	official docs	current	primary	promote	Driver basics
+https://docs.kernel.org/driver-api/infrastructure.html	official docs	current	primary	promote	Driver infrastructure
+https://docs.kernel.org/driver-api/firmware/index.html	official docs	current	primary	watch	Firmware API
+https://docs.kernel.org/driver-api/pm/index.html	official docs	current	primary	promote	Power management
+https://docs.kernel.org/driver-api/regulator.html	official docs	current	primary	promote	Regulator API
+https://docs.kernel.org/driver-api/gpio/index.html	official docs	current	primary	promote	GPIO API
+https://docs.kernel.org/driver-api/pin-control.html	official docs	current	primary	promote	Pin control API
+https://docs.kernel.org/driver-api/i2c.html	official docs	current	primary	promote	I2C driver API
+https://docs.kernel.org/driver-api/spi.html	official docs	current	primary	promote	SPI driver API
+https://docs.kernel.org/driver-api/clk.html	official docs	current	primary	promote	Clock framework
+https://docs.kernel.org/driver-api/thermal/index.html	official docs	current	primary	promote	Thermal API
+https://docs.kernel.org/hwmon/submitting-patches.html	official docs	current	primary	watch	Subsystem-specific patch expectations
+https://docs.kernel.org/core-api/printk-basics.html	official docs	current	primary	promote	Printk basics
+https://docs.kernel.org/core-api/printk-formats.html	official docs	current	primary	promote	Printk formats
+https://docs.kernel.org/core-api/workqueue.html	official docs	current	primary	promote	Workqueues
+https://docs.kernel.org/core-api/refcount-vs-atomic.html	official docs	current	primary	watch	Reference counting
+https://docs.kernel.org/locking/index.html	official docs	current	primary	promote	Locking docs root
+https://docs.kernel.org/RCU/index.html	official docs	current	primary	watch	RCU docs root
+https://docs.kernel.org/kbuild/index.html	official docs	current	primary	promote	Kbuild root
+https://docs.kernel.org/kbuild/kconfig.html	official docs	current	primary	promote	Kconfig behavior
+https://docs.kernel.org/kbuild/modules.html	official docs	current	primary	watch	External modules
+https://docs.kernel.org/process/license-rules.html	official docs	current	primary	watch	SPDX/license rules
+https://docs.kernel.org/doc-guide/index.html	official docs	current	primary	watch	Documentation workflow
+https://b4.docs.kernel.org/en/latest/	tool docs	current	primary	promote	B4 workflow root
+https://b4.docs.kernel.org/en/latest/contributor/overview.html	tool docs	current	primary	promote	B4 contributor overview
+https://b4.docs.kernel.org/en/latest/contributor/prep.html	tool docs	current	primary	promote	Patch series prep
+https://b4.docs.kernel.org/en/latest/contributor/send.html	tool docs	current	primary	promote	Patch sending
+https://b4.docs.kernel.org/en/latest/contributor/trailers.html	tool docs	current	primary	promote	Review trailers
+https://b4.docs.kernel.org/en/latest/maintainer/overview.html	tool docs	current	primary	watch	Maintainer b4 flow
+https://b4.docs.kernel.org/en/latest/maintainer/am-shazam.html	tool docs	current	primary	watch	Apply patch threads
+https://b4.docs.kernel.org/en/latest/maintainer/diff.html	tool docs	current	primary	watch	Compare patch series
+https://b4.docs.kernel.org/en/latest/maintainer/pr.html	tool docs	current	primary	watch	Pull request handling
+https://b4.docs.kernel.org/en/latest/reviewer/overview.html	tool docs	current	primary	watch	Review flow
+https://docs.kernelci.org/intro/	tool docs	2025-08-04	primary	promote	KernelCI ecosystem
+https://docs.kernelci.org/tests/	tool docs	current	primary	promote	KernelCI tests
+https://docs.kernelci.org/intro/platform-testing/	tool docs	current	primary	watch	Platform integration
+https://docs.tuxsuite.com/	tool docs	current	primary	promote	TuxSuite root
+https://docs.tuxsuite.com/building/	tool docs	current	primary	watch	TuxBuild
+https://learn.tuxsuite.com/cli/building/reproducing/	tool docs	current	primary	promote	Reproducible builds
+https://tuxmake.org/	tool docs	current	primary	promote	TuxMake portable builds
+https://tuxmake.org/reproducible_builds/	tool docs	current	primary	promote	Reproducible build approach
+https://www.linaro.org/blog/how-to-bisect-linux-kernel-build-and-boot-failures-with-tuxmake-and-tuxrun/	blog	2026-01-29	secondary	promote	Stable bisection environment
+https://www.collabora.com/news-and-blog/blog/2023/12/01/advocating-for-better-kernel-integration-for-all/	blog	2023-12-01	secondary	promote	Integration tools and failed probe tests
+https://bootlin.com/training/debugging	training	2026	secondary	promote	Debug/profiling training map
+https://bootlin.com/doc/training/sessions/online.debugging.sep2023/debugging-slides.pdf	training	2023	secondary	watch	Tracing/profiling slides
+https://bootlin.com/blog/demystifying-kernel-boot-sequence/	blog	2025	secondary	watch	Boot sequence context
+https://bootlin.com/blog/tag/device-tree/	blog	current	secondary	watch	Device tree articles
+https://bootlin.com/engineering/upstreaming/	article	current	secondary	promote	Upstreaming value
+https://bootlin.com/docs/	training	current	secondary	watch	Training materials catalog
+https://lwn.net/Articles/365835/	article	2009	secondary	watch	Ftrace debugging classic
+https://lwn.net/Articles/1063303/	article	2026-03-19	secondary	watch	B4 review and AI review tooling
+https://github.com/google/syzkaller/blob/master/docs/linux/setup.md	tool docs	current	primary	watch	Syzkaller setup
+https://github.com/google/syzkaller/blob/master/docs/linux/external_fuzzing_usb.md	tool docs	current	primary	watch	USB fuzzing
+https://github.com/google/syzkaller/blob/master/docs/syzbot.md	tool docs	current	primary	promote	Syzbot workflow
+https://github.com/google/syzkaller/blob/master/docs/reproducing_crashes.md	tool docs	current	primary	promote	Crash reproduction
+https://github.com/google/syzkaller/blob/master/docs/linux/kernel_configs.md	tool docs	current	primary	watch	Kernel configs for fuzzing
+https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md	tool docs	current	primary	watch	bpftrace reference
+https://github.com/iovisor/bcc/blob/master/docs/tutorial.md	tool docs	current	primary	watch	BCC tutorial
+https://github.com/rostedt/trace-cmd	tool docs	current	primary	watch	trace-cmd tooling
+https://github.com/rostedt/kernel-shark	tool docs	current	primary	watch	KernelShark visualization
+https://lttng.org/docs/	tool docs	current	primary	watch	LTTng docs
+https://lttng.org/docs/v2.13/	tool docs	current	primary	watch	LTTng 2.13 docs
+https://github.com/linux-test-project/ltp	tool docs	current	primary	watch	LTP repository
+https://linux-test-project.readthedocs.io/en/latest/	tool docs	current	primary	promote	LTP docs
+https://smatch.sourceforge.net/	tool docs	current	secondary	watch	Smatch static analysis
+https://sparse.docs.kernel.org/en/latest/	tool docs	current	primary	watch	Sparse standalone docs
+https://coccinelle.gitlabpages.inria.fr/website/	tool docs	current	primary	promote	Coccinelle project
+https://coccinelle.gitlabpages.inria.fr/website/docs/main_grammar.html	tool docs	current	primary	watch	Coccinelle grammar
+https://www.kernel.org/doc/html/latest/dev-tools/coccinelle.html	official docs	current	primary	promote	Kernel Coccinelle docs
+https://www.kernel.org/doc/html/latest/dev-tools/sparse.html	official docs	current	primary	promote	Kernel Sparse docs
+https://www.kernel.org/doc/html/latest/dev-tools/smatch.html	official docs	current	primary	watch	Kernel Smatch docs if present
+https://arxiv.org/abs/2404.17966	paper	2024	secondary	watch	Patch coverage and configs
+https://arxiv.org/abs/2411.02091	paper	2024	secondary	watch	Regression fix times
+https://arxiv.org/abs/2504.09474	paper	2025	secondary	watch	Out-of-tree patch migration
+https://arxiv.org/abs/2510.08918	paper	2025	secondary	watch	Syzkaller seed generation
+https://arxiv.org/abs/2603.24825	paper	2026	secondary	watch	Patch validation at scale
+https://arxiv.org/abs/2603.29919	paper	2026	secondary	promote	Skill token efficiency
+https://developers.openai.com/codex/skills/	official docs	current	primary	promote	Codex skill structure
+https://docs.claude.com/en/docs/claude-code/skills	official docs	current	primary	promote	Claude skills
+https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices	official docs	current	primary	promote	Skill best practices
+https://agentskills.io/skill-creation/best-practices	standard docs	current	primary	promote	Agent Skills best practices
+https://agentskills.io/skill-creation/evaluating-skills	standard docs	current	primary	promote	Skill evaluation
+https://agentskills.io/specification	standard docs	current	primary	promote	Skill specification
+https://www.reddit.com/r/linux/comments/1qt5znx/linuxs_b4_kernel_development_tool_now_dogfeeding/	social	2026	tertiary	watch	B4 AI review discussion lead
+https://www.reddit.com/r/LinuxTeck/comments/1tnvyl2/linux_kernel_maintainers_are_starting_to_push/	social	2026	tertiary	watch	AI-generated churn caution lead
+https://www.reddit.com/r/embedded/comments/11eyz2x	social	2023	tertiary	watch	Driver patch process novice pain points
+https://www.reddit.com/r/linux/comments/17f57sm	social	2023	tertiary	watch	Patch submission friction lead
+https://www.reddit.com/r/kernel/comments/mvq6qd	social	2021	tertiary	watch	Trivial patch policy discussion lead

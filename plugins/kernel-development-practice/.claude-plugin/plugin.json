@@ -1,0 +1,21 @@
+{
+  "name": "kernel-development-practice",
+  "displayName": "Kernel Development Practice",
+  "version": "0.1.0",
+  "description": "Linux kernel development, debugging, testing, review, devicetree, driver, stable, and vendor/LTS workflows packaged as an Agent Skill.",
+  "author": {
+    "name": "utsavbalar1231",
+    "email": "utsavbalar1231@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "linux-kernel",
+    "devicetree",
+    "drivers",
+    "debugging",
+    "kunit",
+    "kselftest",
+    "stable",
+    "vendor-kernel"
+  ]
+}

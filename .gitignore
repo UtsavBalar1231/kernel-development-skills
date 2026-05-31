@@ -1,0 +1,13 @@
+# Generated local documentation indexes
+plugins/*/skills/*/assets/kernel-doc-index.jsonl
+
+# Python bytecode and local caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Local editor and OS files
+.DS_Store
+*.swp
+*.swo

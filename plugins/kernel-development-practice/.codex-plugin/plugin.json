@@ -1,0 +1,39 @@
+{
+  "name": "kernel-development-practice",
+  "version": "0.1.0",
+  "description": "Linux kernel development, debugging, testing, review, devicetree, driver, stable, and vendor/LTS workflows packaged as an Agent Skill.",
+  "author": {
+    "name": "utsavbalar1231",
+    "email": "utsavbalar1231@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "linux-kernel",
+    "devicetree",
+    "drivers",
+    "debugging",
+    "kunit",
+    "kselftest",
+    "stable",
+    "vendor-kernel"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Kernel Development Practice",
+    "shortDescription": "Linux kernel workflow, debug, and test practice",
+    "longDescription": "Use Kernel Development Practice for Linux kernel and kernel-adjacent work: driver changes, Kconfig, devicetree bindings and DTS, debugging, tracing, CI failures, KUnit, kselftest, stable and regression handling, maintainer routing, and vendor/LTS maintenance.",
+    "developerName": "utsavbalar1231",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Plan and verify a Linux kernel driver change.",
+      "Review a devicetree binding and DTS update.",
+      "Debug a kernel CI or regression failure."
+    ],
+    "brandColor": "#2563EB"
+  }
+}
