@@ -28,7 +28,7 @@ details.
 | Probe ordering | Are resources acquired before hardware enable, state initialized before callbacks, and subsystem registration last? |
 | Error paths | Does every failure return the original errno, log enough context, and unwind enabled hardware? |
 | Deferred probe | Are supplier failures returned, logged with `dev_err_probe()`, and visible in `devices_deferred`? |
-| Lifetime | Can any IRQ, timer, work item, callback, or child device access freed state during remove or failed probe? |
+| Lifetime | Can any IRQ, timer, work item, callback, or child device access freed state during remove or failed probe? Does the `remove()` signature match the target tree (`void` on current platform/i2c/spi, `int` on older LTS platform drivers), with no error "returned" from remove paths? |
 | Devres | Is `devm_*` used for probe-bound resources, and is explicit cleanup kept where ordering matters? |
 | Locking/context | Are sleepable operations out of hard IRQ/spinlock/atomic context? Are lock ordering and callback reentry considered? |
 | PM | Are runtime PM gets/puts balanced, suspend paths serialized, and wakeup behavior explicit? |
@@ -83,8 +83,9 @@ details.
   issue unless the blast radius is intentional and documented.
 - Validate against the vendor integration surface: active DTS, firmware blobs,
   rootfs packages, out-of-tree modules, bootloader assumptions, and CI artifacts.
-- For stable candidates, keep fixes small, bug-focused, already upstream or
-  headed upstream, and avoid risky feature/refactor payloads.
+- For stable candidates, keep fixes small and bug-focused, and avoid risky
+  feature/refactor payloads. A fix is only applied to a stable tree once it
+  (or an equivalent) is in mainline.
 
 ## Commit And Review Notes
 

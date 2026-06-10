@@ -4,6 +4,18 @@ Load this when editing or reviewing Linux kernel driver code. Prefer local
 kernel docs and nearby subsystem drivers over memory; vendor and LTS trees may
 not have every current upstream helper.
 
+## Table Of Contents
+
+- Source map
+- Driver shape
+- Resource lifetime
+- Embedded API choices
+- Subsystem selection
+- Runtime PM
+- Error handling and logging
+- Deprecated and risky patterns
+- Version and vendor trees
+
 ## Source Map
 
 Check the local kernel tree first:
@@ -38,7 +50,17 @@ as "if available in this tree" and check with `rg`.
   happens after the device can answer callbacks.
 - Use `dev_err_probe(dev, ret, ...)` for probe failures. It standardizes errno
   logging, returns the error, and records deferred-probe reasons when the error
-  is `-EPROBE_DEFER`.
+  is `-EPROBE_DEFER`. Using it is fine even when the error can never be
+  `-EPROBE_DEFER`; `dev_warn_probe()`/`dev_info_probe()` exist for graded
+  probe logging where available.
+- In current mainline, the `remove()` callback returns `void` for platform
+  (6.11+, after the `remove_new` transition), i2c (6.1+), and spi (5.18+)
+  drivers. Older LTS/vendor trees still use `int remove()` for platform
+  drivers; match the signature of the target tree and never "return an error"
+  from a remove path to signal failure.
+- For purely virtual devices, prefer `faux_device` (6.14+) over fake platform
+  devices when the target tree has it; do not abuse the platform bus for
+  things that are not platform hardware.
 - If probe defers, check `/sys/kernel/debug/devices_deferred` and fix the
   missing supplier, config, or DT dependency. Do not paper over deferral with
   sleeps, retries, or unconditional success.
@@ -56,6 +78,7 @@ as "if available in this tree" and check with `rg`.
 | Probe-bound memory | `devm_kzalloc()`, `devm_kcalloc()`, `devm_kmalloc_array()` | Open-coded allocation math; use `struct_size()`/`array_size()` helpers for flexible objects. |
 | MMIO resource | `devm_platform_ioremap_resource()` or named variant | Raw `ioremap()` without owning/requesting the resource. |
 | Custom cleanup | `devm_add_action_or_reset()` when available | Unbalanced partial probe unwinds. |
+| Scoped cleanup | `<linux/cleanup.h>`: `guard()`, `scoped_guard()` for locks, `__free()`/`DEFINE_FREE` for allocations and OF node puts, if available in this tree | Mixing scoped cleanup with manual `goto` unwinds for the same resource; backporting the idiom into trees without `cleanup.h`. |
 | Subsystem registration | `devm_*_register()` only when callbacks cannot outlive state incorrectly | Blindly managed registration when remove ordering must be explicit. |
 | Non-devres lifetime | explicit get/put/refcount pair | Mixing devm and manual release without documenting ordering. |
 
@@ -68,7 +91,7 @@ asynchronous work, or reason about callbacks racing with removal.
 | Surface | Use | Avoid / validate |
 | --- | --- | --- |
 | MMIO registers | `void __iomem *`, `readb/readw/readl()`, `writeb/writew/writel()`, `ioread*/iowrite*()` when subsystem style uses them | Direct dereference of `__iomem`; missing posted-write readback when hardware requires completion. |
-| Register maps | `devm_regmap_init_i2c()`, `devm_regmap_init_spi()`, `devm_regmap_init_mmio()`, `regmap_update_bits()`, `regmap_bulk_read/write()` | Private register caches or bit-twiddling helpers when regmap handles locking, endianness, cache, and variants. |
+| Register maps | `devm_regmap_init_i2c()`, `devm_regmap_init_spi()`, `devm_regmap_init_mmio()`, `regmap_update_bits()`, `regmap_bulk_read/write()`; `REGCACHE_MAPLE` for new cached regmaps when available (`REGCACHE_RBTREE` is legacy) | Private register caches or bit-twiddling helpers when regmap handles locking, endianness, cache, and variants. |
 | Regmap fields | `devm_regmap_field_alloc()` for variant bitfields | Macros hiding different bit layouts across hardware revisions. |
 | GPIO consumers | `devm_gpiod_get*()`, logical `gpiod_get/set_value*()`, `gpiod_to_irq()` only when needed | New integer `gpio_*` users; raw GPIO values unless the driver truly needs physical level. |
 | Sleeping GPIOs | `gpiod_cansleep()` and `_cansleep` accessors from sleepable context | Accessing I2C/SPI-backed GPIOs in hard IRQ or spinlocked paths. |
@@ -112,7 +135,12 @@ when a private char device would be faster to write.
 - Add runtime PM when the hardware has meaningful idle states, shared suppliers,
   or subsystem expectations. Avoid PM boilerplate that cannot be tested.
 - Use `struct dev_pm_ops` and subsystem helpers/macros. Keep runtime PM and
-  system sleep callbacks consistent.
+  system sleep callbacks consistent. In current trees prefer
+  `DEFINE_RUNTIME_DEV_PM_OPS()`/`DEFINE_SIMPLE_DEV_PM_OPS()` with `pm_ptr()`
+  (or `RUNTIME_PM_OPS`/`SYSTEM_SLEEP_PM_OPS` and `pm_sleep_ptr()`) instead of
+  `SIMPLE_DEV_PM_OPS` plus `#ifdef CONFIG_PM` blocks.
+- Use `devm_pm_runtime_enable()` when available so error paths cannot leave
+  runtime PM enabled/disabled unbalanced.
 - Prefer `pm_runtime_resume_and_get()` over `pm_runtime_get_sync()` when the
   target tree provides it and the caller checks errors.
 - Balance every successful get with put/autosuspend. On errors after a get,
@@ -143,7 +171,7 @@ when a private char device would be faster to write.
 | `simple_strto*()` | `kstrto*()` |
 | `strcpy()` | `strscpy()` or `strscpy_pad()` |
 | `strncpy()` for C strings | `strscpy()`/`strscpy_pad()`; `strtomem()` for non-NUL fixed fields |
-| `strlcpy()` | `strscpy()` |
+| `strlcpy()` (removed from the kernel in v6.8) | `strscpy()` |
 | `kmalloc(count * size, ...)` | `kmalloc_array()`, `kcalloc()`, `array_size()` |
 | struct plus trailing array math | flexible array member plus `struct_size()` |
 | zero-length or one-element trailing arrays | C99 flexible array members |

@@ -1,11 +1,22 @@
 #!/usr/bin/env python3
-"""Advisory scan for high-signal risky kernel driver API patterns."""
+"""Advisory scan for high-signal risky kernel driver API patterns.
+
+Advisory by default: findings are printed but the exit code stays 0 unless
+--strict is given. Exit codes: 0 = scanned (findings allowed), 1 = findings
+with --strict, 2 = an explicitly passed path does not exist.
+
+Limitations: comment detection is line-prefix only, so commented-out code may
+still be flagged; path-scoped rules (e.g. legacy GPIO) only apply when the
+scanned path contains the relevant prefix such as `drivers/`, so run from the
+kernel root or pass tree-relative paths for full coverage.
+"""
 
 from __future__ import annotations
 
 import argparse
 import re
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
@@ -67,7 +78,7 @@ RULES = (
     PatternRule(
         "strlcpy",
         re.compile(r"\bstrlcpy\s*\("),
-        "strlcpy() is deprecated in kernel code; prefer strscpy()",
+        "strlcpy() was removed from the kernel in v6.8; use strscpy()",
         "references/driver-api-cookbook.md#deprecated-and-risky-patterns",
     ),
     PatternRule(
@@ -96,11 +107,16 @@ RULES = (
 )
 
 
-def git_changed_paths() -> list[str]:
-    commands = (
-        ("git", "diff", "--name-only", "--diff-filter=ACMRT"),
-        ("git", "diff", "--cached", "--name-only", "--diff-filter=ACMRT"),
-    )
+def git_changed_paths(against: str | None = None) -> list[str]:
+    if against:
+        commands: tuple[tuple[str, ...], ...] = (
+            ("git", "diff", against, "--name-only", "--diff-filter=ACMRT"),
+        )
+    else:
+        commands = (
+            ("git", "diff", "--name-only", "--diff-filter=ACMRT"),
+            ("git", "diff", "--cached", "--name-only", "--diff-filter=ACMRT"),
+        )
     paths: list[str] = []
     seen: set[str] = set()
     for command in commands:
@@ -168,9 +184,26 @@ def iter_findings(paths: Iterable[Path]) -> Iterable[str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("paths", nargs="*", help="Paths to scan. Defaults to git diff paths.")
+    parser.add_argument(
+        "--against",
+        metavar="REV",
+        help="Diff against REV (e.g. HEAD~1, origin/main) instead of the working tree/index.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit non-zero when findings exist (default is advisory exit 0).",
+    )
     args = parser.parse_args()
 
-    raw_paths = args.paths or git_changed_paths()
+    if args.paths:
+        missing = [raw for raw in args.paths if not Path(raw).exists()]
+        if missing:
+            for raw in missing:
+                print(f"error: path does not exist: {raw}", file=sys.stderr)
+            return 2
+
+    raw_paths = args.paths or git_changed_paths(args.against)
     paths = expand_paths(raw_paths)
     if not raw_paths:
         print("No changed paths were found. Pass files or directories explicitly.")
@@ -187,7 +220,7 @@ def main() -> int:
     print("Advisory kernel API pattern findings:")
     for finding in findings:
         print(f"- {finding}")
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

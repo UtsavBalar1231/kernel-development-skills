@@ -66,15 +66,21 @@ In the RK3576/Lapis tree, replace upstream-style `make` examples with
 1. Search existing bindings for the device class and vendor.
 2. If adding a new binding, create YAML schema under the correct `Documentation/devicetree/bindings/` subsystem.
 3. Include SPDX, `$id`, `$schema`, `title`, `maintainers`, `description` when useful, `properties`, `required`, and exactly one top-level `additionalProperties` or `unevaluatedProperties`.
-4. Use two-space YAML indentation; use four-space indentation in DTS examples.
-5. Keep examples minimal and focused on the binding.
-6. Validate schema and examples:
+4. New binding schemas must be dual licensed: `SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)`.
+5. Name the binding file after the first compatible, `vendor,device.yaml`.
+6. Use two-space YAML indentation; use four-space indentation in DTS examples.
+7. Keep examples minimal and focused on the binding.
+8. Validate schema and examples:
 
 ```bash
 make dt_binding_check DT_SCHEMA_FILES=<path/to/schema.yaml>
 ```
 
 If this repo requires a wrapper, use the wrapper equivalent.
+
+9. Route binding patches with the `dt-bindings: <subsystem>: ...` subject
+   prefix and CC `devicetree@vger.kernel.org` plus the maintainers reported by
+   `scripts/get_maintainer.pl`.
 
 ## DTS Workflow
 
@@ -85,9 +91,13 @@ If this repo requires a wrapper, use the wrapper equivalent.
 5. Validate targeted DTB:
 
 ```bash
-make dtbs_check DT_SCHEMA_FILES=<schema-or-subsystem> DTB_CHECKER_FLAGS=-m
-make <board>.dtbs
+make dtbs_check DT_SCHEMA_FILES=<schema-or-pattern>
+make <vendor>/<board>.dtb      # arm64; plain <board>.dtb on arm, or `make dtbs` for all
 ```
+
+`DT_SCHEMA_FILES` accepts colon-separated lists and partial-path patterns such
+as `/gpio/`. Without it, current trees already run `dtbs_check` in
+missing-schema (`-m`) mode by default.
 
 Use repo wrappers when required.
 
@@ -103,6 +113,10 @@ Before editing:
 
 Implementation rules:
 
+- For DT-matched drivers, check the autoload/matching plumbing: `struct
+  of_device_id` with `.of_match_table`, `MODULE_DEVICE_TABLE(of, ...)` (its
+  absence silently breaks module autoloading), `module_platform_driver()`, and
+  `device_get_match_data()` for per-compatible data.
 - Load `driver-api-cookbook.md` before choosing APIs or changing driver lifetime, PM, IRQ, DMA, GPIO, regulator, clock, reset, MMIO, or regmap behavior.
 - Load `driver-review-checklists.md` before final review, backporting, or regression handoff.
 - Keep binding, driver, DTS, config, and test changes split when they have different review owners.

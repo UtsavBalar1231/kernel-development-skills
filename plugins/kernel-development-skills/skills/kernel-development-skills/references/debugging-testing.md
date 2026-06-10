@@ -129,7 +129,7 @@ Pick tools based on bug class and runtime budget:
 | Tool | Use for |
 | --- | --- |
 | KASAN | out-of-bounds and use-after-free memory bugs; high overhead |
-| KMSAN | uninitialized memory reads; typically specialist builds |
+| KMSAN | uninitialized memory reads; clang-only and x86_64-only, so typically specialist builds |
 | KCSAN | data races; useful for concurrency changes |
 | UBSAN | undefined behavior checks |
 | KFENCE | lower-overhead memory bug detection, useful for longer runs |
@@ -164,6 +164,8 @@ Typical upstream usage:
 
 ```bash
 make -C tools/testing/selftests TARGETS=<target> run_tests
+make TARGETS="<target> <target>" kselftest          # from the kernel top level
+./run_kselftest.sh -c <collection> -t <collection>:<test>   # installed runner
 ```
 
 In repos with wrappers, replace direct `make` with the repo-prescribed wrapper.

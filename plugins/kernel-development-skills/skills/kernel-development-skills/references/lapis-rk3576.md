@@ -41,6 +41,10 @@ arch/arm64/boot/dts/rockchip/rk3576-pinctrl.dtsi
 - Do not enable kernel options that break held rootfs hardware-accelerated packages (`libmali`, `rknpu2`, `rkaiq`) unless rebuilding those packages is in scope.
 - Preserve existing dirty files unless the user explicitly scopes them in.
 
+`scripts/check_lapis_guardrails.py` enforces only the forbidden-DTSI, shared
+defconfig, and direct-`make` rules above; the rootfs-package and dirty-file
+rules are manual judgment.
+
 ## Active DTS
 
 Active board surface:
@@ -110,7 +114,8 @@ For Lapis board audits and bring-up:
 3. Binding schema under `Documentation/devicetree/bindings/`.
 4. Driver implementation and subsystem docs.
 5. Resolved kernel config, usually `output/.config`.
-6. Local runtime/testing matrices: `linux-docs/testing/data/peripherals/*.tests.json`.
+6. Local runtime/testing matrices, if the checkout ships one (for example
+   `linux-docs/testing/data/peripherals/*.tests.json`).
 7. Hardware boot logs and measured behavior.
 
 Do not treat older Denali/Pamir names as current without checking the live path.
