@@ -56,9 +56,9 @@ this fix is correct. Mention hardware, datasheet, logs, or regression evidence
 when relevant.
 
 Fixes: <12+ sha> ("original subject")
-Link: https://lore.kernel.org/...
-Closes: https://bugzilla.kernel.org/...
 Reported-by: Name <mail>
+Closes: https://bugzilla.kernel.org/...
+Link: https://lore.kernel.org/...
 Tested-by: Name <mail>
 Reviewed-by: Name <mail>
 Signed-off-by: Name <mail>
@@ -68,10 +68,17 @@ Rules of thumb:
 
 - The body should justify the change, not narrate the diff.
 - Add `Fixes:` for bug fixes whenever a culprit commit is known.
-- Add `Link:` or `Closes:` to reports, discussions, or bug trackers that establish context.
+- `Reported-by:` must be immediately followed by a `Closes:` tag pointing to
+  the report (checkpatch warns otherwise); omit `Closes:` only when the report
+  is not available on the web.
+- Use `Closes:` for the report the patch fully fixes; use `Link:` for
+  background discussion or when only part of the reported issue is fixed.
 - Keep `Reported-by`, `Tested-by`, `Reviewed-by`, and `Acked-by` accurate; do not invent review tags.
 - Include `Signed-off-by:` when preparing kernel-style patches.
 - For stable candidates, `Fixes:` is helpful but does not replace stable rules or `Cc: stable@vger.kernel.org`.
+- Stable tags support annotations: `Cc: <stable@vger.kernel.org> # 6.1.x` to
+  scope versions, and `Cc: <stable+noautosel@kernel.org> # reason` to opt out
+  of AUTOSEL while documenting why.
 
 ## Maintainers And Submission
 
@@ -83,6 +90,15 @@ scripts/get_maintainer.pl <changed-files-or-patch>
 ```
 
 Use `--strict` as a review aid, not a replacement for judgment. Some warnings are false positives; explain intentional exceptions.
+
+When `b4` is available, prefer its contributor workflow for mailed series:
+
+```bash
+b4 prep -n <branch-name>        # start a series with tracking metadata
+b4 prep --auto-to-cc            # collect To/Cc from get_maintainer
+b4 send                        # submit without a local SMTP setup
+b4 trailers -u                 # apply review trailers received by mail
+```
 
 Routing guidance:
 
@@ -101,18 +117,23 @@ Regression handling:
 - Reproduce or narrowly characterize the failure.
 - Identify the culprit with logs, bisect, or commit analysis.
 - CC `regressions@lists.linux.dev` for regression reports when appropriate.
-- Use regzbot when tracking matters, especially for mailed reports:
+- Use regzbot when tracking matters. In your own report use the plain form; use
+  the caret form only when replying to someone else's report (the caret tells
+  regzbot to treat the parent mail as the report):
 
 ```text
-#regzbot ^introduced: <commit-or-version-range>
+#regzbot introduced: <commit-or-version-range>    (in your own report)
+#regzbot ^introduced: <commit-or-version-range>   (replying to a report)
 ```
 
 Stable candidates should generally:
 
-- Be small, obvious fixes for real bugs.
-- Already exist upstream or be headed upstream.
+- Be small (roughly 100 lines with context or less), obviously correct, and
+  tested fixes for real reported bugs.
+- Tagging `Cc: stable` at submission is fine, but a patch is only applied to a
+  stable tree once it (or an equivalent fix) is in mainline.
 - Include `Fixes:` when possible.
-- Include `Cc: stable@vger.kernel.org` when submitting upstream if the patch meets stable rules.
+- Include `Cc: stable@vger.kernel.org` when submitting upstream if the patch meets stable rules; add a `# 6.x` version annotation when the fix only applies to some series.
 - Avoid feature additions, major refactors, and risky behavior changes.
 
 ## Vendor And LTS Branches

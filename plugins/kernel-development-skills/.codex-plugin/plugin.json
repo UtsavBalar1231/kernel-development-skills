@@ -1,6 +1,6 @@
 {
   "name": "kernel-development-skills",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Linux kernel driver API, debugging, testing, review, devicetree, stable, and vendor/LTS workflows packaged as an Agent Skill.",
   "author": {
     "name": "utsavbalar1231",

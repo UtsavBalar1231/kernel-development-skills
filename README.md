@@ -52,13 +52,15 @@ Cursor, Windsurf, and other instruction-file based setups.
 
 ## Regenerate Local Kernel Documentation Routes
 
-The large JSONL documentation index is intentionally not committed. Regenerate
-it against the kernel checkout you are working in:
+`references/doc-routes.md` inside the skill is a curated, stable route map.
+The per-checkout route map and JSONL index are generated artifacts and are
+intentionally not committed. Regenerate them against the kernel checkout you
+are working in:
 
 ```bash
 python3 plugins/kernel-development-skills/skills/kernel-development-skills/scripts/index_kernel_docs.py \
   /path/to/linux-kernel \
-  plugins/kernel-development-skills/skills/kernel-development-skills/references/doc-routes.md \
+  plugins/kernel-development-skills/skills/kernel-development-skills/assets/kernel-doc-routes.md \
   --jsonl plugins/kernel-development-skills/skills/kernel-development-skills/assets/kernel-doc-index.jsonl
 ```
 
@@ -67,15 +69,21 @@ Query the JSONL with `rg` or `jq`, then open only the relevant kernel docs.
 ## Validate
 
 ```bash
-python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
-  plugins/kernel-development-skills/skills/kernel-development-skills
-python3 ~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
-  plugins/kernel-development-skills
 claude plugin validate plugins/kernel-development-skills
 claude plugin validate .
 python3 -m py_compile plugins/kernel-development-skills/skills/kernel-development-skills/scripts/*.py
 python3 plugins/kernel-development-skills/skills/kernel-development-skills/scripts/check_kernel_api_patterns.py \
   --help >/dev/null
+```
+
+If Codex with its system skills is installed, additionally run its validators
+(the `.system` paths are Codex-internal and may move between releases):
+
+```bash
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  plugins/kernel-development-skills/skills/kernel-development-skills
+python3 ~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
+  plugins/kernel-development-skills
 ```
 
 Research provenance from the skill creation pass is kept in

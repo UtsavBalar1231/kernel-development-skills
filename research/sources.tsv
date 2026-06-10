@@ -124,7 +124,7 @@ https://coccinelle.gitlabpages.inria.fr/website/	tool docs	current	primary	promo
 https://coccinelle.gitlabpages.inria.fr/website/docs/main_grammar.html	tool docs	current	primary	watch	Coccinelle grammar
 https://www.kernel.org/doc/html/latest/dev-tools/coccinelle.html	official docs	current	primary	promote	Kernel Coccinelle docs
 https://www.kernel.org/doc/html/latest/dev-tools/sparse.html	official docs	current	primary	promote	Kernel Sparse docs
-https://www.kernel.org/doc/html/latest/dev-tools/smatch.html	official docs	current	primary	watch	Kernel Smatch docs if present
+https://www.kernel.org/doc/html/latest/dev-tools/smatch.html	official docs	current	primary	drop	Dead link: no dev-tools/smatch.rst in mainline; use smatch.sourceforge.net
 https://arxiv.org/abs/2404.17966	paper	2024	secondary	watch	Patch coverage and configs
 https://arxiv.org/abs/2411.02091	paper	2024	secondary	watch	Regression fix times
 https://arxiv.org/abs/2504.09474	paper	2025	secondary	watch	Out-of-tree patch migration

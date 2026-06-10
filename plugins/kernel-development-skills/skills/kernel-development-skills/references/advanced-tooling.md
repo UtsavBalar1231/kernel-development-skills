@@ -13,6 +13,7 @@ targeted build, checkpatch, local logs, KUnit, or kselftest.
 | Static analysis | sparse, Smatch, Coccinelle, clang diagnostics | Use as evidence sources, not automatic truth. Confirm findings in code. |
 | Fuzzing and coverage | syzkaller, KCOV, KASAN, KMSAN, KCSAN | Capture reproducer, config, console log, and suspected culprit before patching. |
 | Runtime tracing | ftrace, trace-cmd, KernelShark, perf, eBPF/bpftrace, BCC, LTTng | Prefer existing tracepoints; keep filters narrow on embedded boards. |
+| Quick boot/smoke test | virtme-ng (`vng`), QEMU | Boot the just-built kernel against the host rootfs for fast probe/regression checks before broader CI. |
 | Crash forensics | pstore/ramoops, kdump, crash, drgn, GDB/vmlinux | Preserve unstripped `vmlinux`, modules, System.map, config, and vmcore/logs. |
 | ABI and BTF inspection | pahole, bpftool, libabigail | Use when struct layout, BTF, UAPI, or module ABI is relevant. |
 
@@ -23,6 +24,9 @@ Probe tools before prescribing them:
 ```bash
 command -v b4 sparse spatch smatch trace-cmd perf bpftrace crash drgn pahole
 ```
+
+`command -v` with multiple names prints only the tools that exist and exits
+non-zero if any is missing, so check the output lines, not the exit code.
 
 If a tool is unavailable, do not install or vendor it unless that is explicitly
 in scope. Pick the nearest repo-native or already-installed check.

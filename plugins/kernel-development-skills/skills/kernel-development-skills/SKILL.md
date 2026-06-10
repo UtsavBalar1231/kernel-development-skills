@@ -1,6 +1,10 @@
 ---
 name: kernel-development-skills
-description: Use when working on Linux kernel or kernel-adjacent changes, including drivers, Kconfig, defconfig, DTS/devicetree bindings, kernel debugging, tracing, CI failures, KUnit/kselftest, patch review, maintainer routing, stable/regression fixes, or vendor/LTS kernel maintenance. Also use for RK3576/Lapis vendor kernel work.
+description: Provides Linux kernel development workflows, checklists, and guardrail scripts covering driver APIs, debugging, tracing, devicetree, patch submission, and CI triage. Use when working on Linux kernel or kernel-adjacent changes, including drivers, Kconfig, defconfig, DTS/devicetree bindings, kernel debugging, CI failures, KUnit/kselftest, patch review, maintainer routing, stable/regression fixes, or vendor/LTS kernel maintenance. Also use for RK3576/Lapis vendor kernel work.
+license: MIT
+metadata:
+  version: "0.3.0"
+compatibility: Bundled scripts require python3 (3.9+); content targets any Linux kernel tree.
 ---
 
 # Kernel Development Skills
@@ -22,7 +26,7 @@ Use this skill to make kernel changes with the same discipline expected by upstr
    - RK3576/Lapis vendor work: `references/lapis-rk3576.md`
    - Advanced tools, fuzzing, trace pipelines, patch tooling: `references/advanced-tooling.md`
    - CI failures, KernelCI/LAVA/TuxSuite, regression reports: `references/ci-regression.md`
-   - Finding local docs: `references/doc-routes.md` or query `assets/kernel-doc-index.jsonl`
+   - Finding local docs: `references/doc-routes.md`, or generate and query `assets/kernel-doc-index.jsonl` (see Local Documentation below)
 4. Make the smallest coherent change that matches the subsystem's existing style.
 5. Verify with the narrowest meaningful checks first, then broaden when the blast radius grows.
 
@@ -63,25 +67,26 @@ For driver maintenance, review, regression fixes, or backports, load `references
 
 ## Bundled Scripts
 
-Use scripts when they save repeated reasoning or catch local footguns:
+Use scripts when they save repeated reasoning or catch local footguns. Paths
+are relative to this skill's directory:
 
 ```bash
-python3 /path/to/kernel-development-skills/scripts/triage_kernel_change.py [changed paths...]
-python3 /path/to/kernel-development-skills/scripts/check_lapis_guardrails.py [changed paths...]
-python3 /path/to/kernel-development-skills/scripts/check_kernel_api_patterns.py [changed paths...]
+python3 scripts/triage_kernel_change.py [changed paths...]
+python3 scripts/check_lapis_guardrails.py [changed paths...]
+python3 scripts/check_kernel_api_patterns.py [changed paths...]
 ```
 
 `triage_kernel_change.py` emits a path-based checklist with references and likely checks. `check_lapis_guardrails.py` fails on forbidden Lapis SoC DTS edits and warns on shared defconfig/direct-make hazards when the target repo matches that board family. `check_kernel_api_patterns.py` is advisory only; use kernel-native tools and review judgment for final decisions.
 
 ## Local Documentation
 
-Prefer local docs in the checked-out kernel because vendor trees can differ from current upstream. Do not load the full JSONL index into context. Query it with `rg` or `jq`, then open only the relevant kernel docs.
-
-If `references/doc-routes.md` or generated `assets/kernel-doc-index.jsonl` is stale or missing, regenerate both from the kernel root:
+Prefer local docs in the checked-out kernel because vendor trees can differ from current upstream. `references/doc-routes.md` holds curated, stable routes. The per-checkout artifacts `assets/kernel-doc-routes.md` and `assets/kernel-doc-index.jsonl` do not exist until generated; create or refresh them from the kernel root (paths relative to this skill's directory):
 
 ```bash
-python3 /path/to/kernel-development-skills/scripts/index_kernel_docs.py \
+python3 scripts/index_kernel_docs.py \
   /path/to/kernel-root \
-  /path/to/kernel-development-skills/references/doc-routes.md \
-  --jsonl /path/to/kernel-development-skills/assets/kernel-doc-index.jsonl
+  assets/kernel-doc-routes.md \
+  --jsonl assets/kernel-doc-index.jsonl
 ```
+
+Do not load the full JSONL index into context. Query it with `rg` or `jq`, then open only the relevant kernel docs.

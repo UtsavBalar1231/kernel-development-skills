@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
-"""Index a Linux kernel Documentation/ tree for the kernel-development skill."""
+"""Index a Linux kernel Documentation/ tree for the kernel-development skill.
+
+The generated route map and JSONL index are per-checkout artifacts: regenerate
+them for the kernel tree you are working in and do not commit them. The header
+never embeds the local checkout path; it records the indexed kernel version
+instead so staleness is visible.
+"""
 
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 
 
@@ -58,8 +65,13 @@ KEYWORDS = (
     "rk3576",
     "lapis",
     "pamir",
-    "denali",
 )
+# Match keywords only when not preceded by a word character, so "stability"
+# does not hit "abi" and "dispatch" does not hit "patch". Suffix matches such
+# as "drivers" for "driver" stay intentional.
+KEYWORD_RES = {
+    keyword: re.compile(r"(?<![a-z0-9])" + re.escape(keyword)) for keyword in KEYWORDS
+}
 MAX_ROUTES_PER_KEYWORD = 12
 MAX_TOP_LEVEL_DIRS = 40
 CURATED_ROUTES = {
@@ -132,10 +144,7 @@ def route_score(keyword: str, rel_path: str) -> tuple[int, str]:
     full_path = f"Documentation/{rel_path}"
     for group, paths in CURATED_ROUTES.items():
         if full_path in paths:
-            try:
-                return (0, f"{group}:{paths.index(full_path):03d}:{full_path}")
-            except ValueError:
-                return (0, full_path)
+            return (0, f"{group}:{paths.index(full_path):03d}:{full_path}")
 
     lowered = rel_path.lower()
     preferred = (
@@ -204,7 +213,25 @@ def headings(text: str, limit: int = 8) -> list[str]:
 
 def keyword_hits(text: str) -> list[str]:
     lowered = text.lower()
-    return [keyword for keyword in KEYWORDS if keyword in lowered]
+    return [keyword for keyword in KEYWORDS if KEYWORD_RES[keyword].search(lowered)]
+
+
+def kernel_version(kernel_root: Path) -> str:
+    """Read VERSION/PATCHLEVEL/SUBLEVEL/EXTRAVERSION from the kernel Makefile."""
+    fields = {"VERSION": "", "PATCHLEVEL": "", "SUBLEVEL": "", "EXTRAVERSION": ""}
+    makefile = kernel_root / "Makefile"
+    try:
+        for line in makefile.read_text(encoding="utf-8", errors="replace").splitlines()[:20]:
+            key, _, value = line.partition("=")
+            key = key.strip()
+            if key in fields and not fields[key]:
+                fields[key] = value.strip()
+    except OSError:
+        return "unknown"
+    if not fields["VERSION"]:
+        return "unknown"
+    version = f"{fields['VERSION']}.{fields['PATCHLEVEL']}.{fields['SUBLEVEL']}"
+    return version + fields["EXTRAVERSION"]
 
 
 def main() -> int:
@@ -227,7 +254,8 @@ def main() -> int:
         try:
             jsonl_display = str(args.jsonl.relative_to(args.output.parent.parent))
         except ValueError:
-            jsonl_display = str(args.jsonl)
+            # Never write an absolute local path into the generated artifact.
+            jsonl_display = args.jsonl.name if args.jsonl.is_absolute() else str(args.jsonl)
 
     entries: list[dict[str, object]] = []
     dir_counts: dict[str, int] = {}
@@ -252,8 +280,7 @@ def main() -> int:
             file_headings = headings(text)
             hits = keyword_hits(text)
             for hit in hits:
-                if len(keyword_paths[hit]) < 40:
-                    keyword_paths[hit].append(str(rel))
+                keyword_paths[hit].append(str(rel))
 
         entries.append(
             {
@@ -270,7 +297,11 @@ def main() -> int:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", encoding="utf-8") as out:
         out.write("# Kernel Documentation Routes\n\n")
-        out.write(f"Kernel root: `{args.kernel_root.resolve()}`\n\n")
+        out.write(
+            "Generated per checkout; regenerate for the kernel tree you are "
+            "working in and do not commit this file.\n\n"
+        )
+        out.write(f"Indexed kernel version: {kernel_version(args.kernel_root)}\n\n")
         out.write(f"Total file entries indexed: {len(entries)}\n\n")
         if args.jsonl:
             out.write(f"Full machine index: `{jsonl_display}`\n\n")
@@ -286,7 +317,8 @@ def main() -> int:
         for group, paths in CURATED_ROUTES.items():
             out.write(f"### {group}\n\n")
             for route in paths:
-                out.write(f"- `{route}`\n")
+                suffix = "" if (args.kernel_root / route).exists() else " (not in this tree)"
+                out.write(f"- `{route}`{suffix}\n")
             out.write("\n")
 
         out.write("\n## Keyword Routes\n\n")

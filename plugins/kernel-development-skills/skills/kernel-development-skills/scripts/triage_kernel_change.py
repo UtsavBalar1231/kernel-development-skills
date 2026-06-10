@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Emit a path-based kernel-change checklist for the current diff or paths."""
+"""Emit a path-based kernel-change checklist for the current diff or paths.
+
+Always exits 0; the output is a checklist, not a verdict. By default the
+changed paths come from the unstaged and staged git diff; pass paths
+explicitly or use --against <rev> to cover committed work.
+"""
 
 from __future__ import annotations
 
@@ -8,6 +13,8 @@ import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 
+
+SCRIPT_DIR = Path(__file__).resolve().parent
 
 FORBIDDEN_LAPIS_SOC_DTSI = {
     "arch/arm64/boot/dts/rockchip/rk3576.dtsi",
@@ -25,11 +32,14 @@ class Triage:
     notes: list[str] = field(default_factory=list)
 
 
-def git_changed_paths() -> list[str]:
-    commands = [
-        ["git", "diff", "--name-only", "--diff-filter=ACMRT"],
-        ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMRT"],
-    ]
+def git_changed_paths(against: str | None = None) -> list[str]:
+    if against:
+        commands = [["git", "diff", against, "--name-only", "--diff-filter=ACMRT"]]
+    else:
+        commands = [
+            ["git", "diff", "--name-only", "--diff-filter=ACMRT"],
+            ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMRT"],
+        ]
     paths: list[str] = []
     seen: set[str] = set()
     for command in commands:
@@ -51,10 +61,16 @@ def add_unique(items: list[str], value: str) -> None:
 
 
 def build_wrapper() -> str | None:
-    if Path("build.sh").is_file():
-        return "./build.sh"
-    if Path("../build.sh").is_file():
-        return "../build.sh"
+    """Find a repo build wrapper from the cwd upward, stopping at the git root."""
+    directory = Path.cwd()
+    for candidate in [directory, *directory.parents]:
+        wrapper = candidate / "build.sh"
+        if wrapper.is_file():
+            if candidate == directory:
+                return "./build.sh"
+            return str(wrapper)
+        if (candidate / ".git").exists():
+            break
     return None
 
 
@@ -73,7 +89,7 @@ def config_target(target: str = "olddefconfig") -> str:
 
 
 def classify(raw_path: str) -> Triage:
-    path = Path(raw_path).as_posix().lstrip("./")
+    path = Path(raw_path.replace("\\", "/")).as_posix()
     name = Path(path).name
     triage = Triage(kind="general kernel change")
     refs = triage.references
@@ -86,10 +102,9 @@ def classify(raw_path: str) -> Triage:
     add_unique(checks, "scripts/get_maintainer.pl <changed-files-or-patch>")
 
     if path in FORBIDDEN_LAPIS_SOC_DTSI:
-        triage.kind = "forbidden Lapis SoC DTSI edit"
         refs.add("references/lapis-rk3576.md")
         add_unique(guardrails, "Do not edit upstream SoC DTSI files for board-only changes.")
-        add_unique(checks, "python3 scripts/check_lapis_guardrails.py " + path)
+        add_unique(checks, f"python3 {SCRIPT_DIR / 'check_lapis_guardrails.py'} {path}")
 
     if path.startswith("Documentation/devicetree/bindings/"):
         triage.kind = "devicetree binding"
@@ -110,7 +125,7 @@ def classify(raw_path: str) -> Triage:
     ):
         triage.kind = "RK3576/Lapis board DTS"
         refs.update({"references/lapis-rk3576.md", "references/device-tree-drivers.md"})
-        add_unique(checks, "python3 scripts/check_lapis_guardrails.py " + path)
+        add_unique(checks, f"python3 {SCRIPT_DIR / 'check_lapis_guardrails.py'} {path}")
         add_unique(checks, "boot hardware when available and capture probe/runtime evidence")
         add_unique(notes, "Use the Lapis board include, not upstream SoC DTSI, for board wiring.")
 
@@ -125,7 +140,7 @@ def classify(raw_path: str) -> Triage:
             }
         )
         add_unique(checks, "scripts/checkpatch.pl --strict <patch-file>")
-        add_unique(checks, "python3 scripts/check_kernel_api_patterns.py " + path)
+        add_unique(checks, f"python3 {SCRIPT_DIR / 'check_kernel_api_patterns.py'} {path}")
         add_unique(checks, kmake_target("<focused-target>"))
         add_unique(checks, "runtime probe/log validation on hardware or suitable emulator")
         add_unique(
@@ -179,6 +194,10 @@ def classify(raw_path: str) -> Triage:
         add_unique(checks, "verify thermal trips, cooling maps, fan cap, tach/fault observability")
         add_unique(notes, "Tie RPM and safety claims to schematic/datasheet or live readings.")
 
+    # The forbidden classification must win over later, more generic matches.
+    if path in FORBIDDEN_LAPIS_SOC_DTSI:
+        triage.kind = "forbidden Lapis SoC DTSI edit"
+
     return triage
 
 
@@ -201,7 +220,8 @@ def render(paths: list[str]) -> str:
     )
     for path in paths:
         triage = classify(path)
-        lines.append(f"## `{Path(path).as_posix().lstrip('./')}`")
+        normalized = Path(path.replace("\\", "/")).as_posix()
+        lines.append(f"## `{normalized}`")
         lines.append("")
         lines.append(f"- Type: {triage.kind}")
         lines.append("- Read: " + ", ".join(f"`{ref}`" for ref in sorted(triage.references)))
@@ -224,8 +244,13 @@ def render(paths: list[str]) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("paths", nargs="*", help="Changed paths. Defaults to git diff paths.")
+    parser.add_argument(
+        "--against",
+        metavar="REV",
+        help="Diff against REV (e.g. HEAD~1, origin/main) instead of the working tree/index.",
+    )
     args = parser.parse_args()
-    paths = args.paths or git_changed_paths()
+    paths = args.paths or git_changed_paths(args.against)
     print(render(paths))
     return 0
 

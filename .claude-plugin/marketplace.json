@@ -1,5 +1,4 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "kernel-development-skills",
   "description": "Kernel Development Skills plugin marketplace for Claude Code.",
   "owner": {
@@ -11,7 +10,7 @@
       "name": "kernel-development-skills",
       "source": "./plugins/kernel-development-skills",
       "description": "Linux kernel driver API, debugging, testing, review, devicetree, stable, and vendor/LTS workflows.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "author": {
         "name": "utsavbalar1231",
         "email": "utsavbalar1231@gmail.com"

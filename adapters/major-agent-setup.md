@@ -69,9 +69,18 @@ that tells Copilot when to use the skill.
 
 ## Gemini CLI
 
-Gemini CLI primarily consumes hierarchical `GEMINI.md` context files. Configure
-Gemini to read `AGENTS.md`, or create a `GEMINI.md` that imports the shared
-instructions:
+Gemini CLI supports Agent Skills natively: user skills in `~/.gemini/skills/`,
+workspace skills in `.gemini/skills/`, and extension-bundled skills.
+
+```bash
+mkdir -p ~/.gemini/skills
+ln -s "$PWD/plugins/kernel-development-skills/skills/kernel-development-skills" \
+  ~/.gemini/skills/kernel-development-skills
+```
+
+For older Gemini CLI versions without skill support, fall back to hierarchical
+`GEMINI.md` context files: configure Gemini to read `AGENTS.md`, or create a
+`GEMINI.md` that imports the shared instructions:
 
 ```markdown
 # Gemini Context
