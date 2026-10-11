@@ -1,0 +1,1 @@
+- [Kernel skill voice and README layout](feedback_kernel_skill_voice.md) — situation-named references in practitioner voice; collapsible GitHub READMEs

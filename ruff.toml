@@ -1,0 +1,2 @@
+# Bundled scripts must run on the oldest python3 a kernel build host still ships.
+target-version = "py39"
