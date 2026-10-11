@@ -1,0 +1,184 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+# Least privilege for every job; none of them writes to the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  P: plugins/kernel-development-skills
+  S: plugins/kernel-development-skills/skills/kernel-development-skills
+  DISABLE_TELEMETRY: "1"
+  DO_NOT_TRACK: "1"
+  DISABLE_AUTOUPDATER: "1"
+  CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+
+jobs:
+  # The scripts promise to run on the oldest python3 a kernel build host still ships.
+  scripts-py39:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.9"
+      - name: Compile scripts
+        run: python3 -m py_compile "$S"/scripts/*.py
+      - name: Scripts answer --help
+        run: |
+          for s in "$S"/scripts/*.py; do
+            python3 "$s" --help >/dev/null
+          done
+      - name: index_kernel_docs.py writes only where told
+        run: |
+          fake="$RUNNER_TEMP/tree"; out="$RUNNER_TEMP/out"
+          mkdir -p "$fake/Documentation/process"
+          printf 'Submitting patches\n==================\n' > "$fake/Documentation/process/submitting-patches.rst"
+          printf 'VERSION = 7\nPATCHLEVEL = 0\nSUBLEVEL = 0\n' > "$fake/Makefile"
+          XDG_CACHE_HOME="$RUNNER_TEMP/cache" python3 "$S/scripts/index_kernel_docs.py" "$fake" --out "$out"
+          test -s "$out/kernel-doc-routes.md" && test -s "$out/kernel-doc-index.jsonl"
+          test -z "$(git status --porcelain --ignored | grep -v __pycache__ || true)"
+      - name: --against refuses option-like revisions
+        run: |
+          for s in triage_kernel_change.py check_kernel_api_patterns.py; do
+            if python3 "$S/scripts/$s" --against=--output="$RUNNER_TEMP/pwned" >/dev/null 2>&1; then
+              echo "$s accepted a revision starting with '-'"; exit 1
+            fi
+            test ! -e "$RUNNER_TEMP/pwned"
+          done
+      - name: Triage and API checker smoke tests
+        run: |
+          python3 "$S/scripts/triage_kernel_change.py" drivers/hwmon/acme-fan.c arch/arm64/boot/dts/acme/acme-soc.dtsi >/dev/null
+          python3 "$S/scripts/check_kernel_api_patterns.py" "$P/evals/files/e6-lts-tree" --json >/dev/null
+
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: ruff
+        run: |
+          python3 -m pip install --disable-pip-version-check ruff==0.15.6
+          ruff check --no-cache .
+      - name: JSON files parse
+        run: |
+          git ls-files '*.json' | while read -r f; do jq empty "$f" || { echo "invalid JSON: $f"; exit 1; }; done
+      - name: Versions agree, tag matches, frontmatter within limits
+        run: |
+          python3 - <<'PY'
+          import json, os, re, sys
+          P = os.environ["P"]
+          j = lambda p: json.load(open(p))
+          cm = j(".cursor-plugin/marketplace.json")
+          skill = open(f"{P}/skills/kernel-development-skills/SKILL.md").read()
+          fm = skill.split("---")[1]
+          v = {
+              "plugin.json": j(f"{P}/plugin.json")["version"],
+              ".claude-plugin/plugin.json": j(f"{P}/.claude-plugin/plugin.json")["version"],
+              ".codex-plugin/plugin.json": j(f"{P}/.codex-plugin/plugin.json")["version"],
+              ".cursor-plugin/plugin.json": j(f"{P}/.cursor-plugin/plugin.json")["version"],
+              "claude marketplace": j(".claude-plugin/marketplace.json")["plugins"][0]["version"],
+              "cursor marketplace metadata": cm["metadata"]["version"],
+              "cursor marketplace plugin": cm["plugins"][0]["version"],
+              "SKILL.md metadata": re.search(r'^\s+version:\s*"([^"]+)"', fm, re.M).group(1),
+          }
+          errs = []
+          if len(set(v.values())) != 1:
+              errs.append(f"version mismatch: {v}")
+          ref = os.environ.get("GITHUB_REF", "")
+          if ref.startswith("refs/tags/v") and ref[len("refs/tags/v"):] != next(iter(v.values())):
+              errs.append(f"tag {ref} does not match manifest version {next(iter(v.values()))}")
+          d = re.search(r"^description: (.*)$", fm, re.M).group(1)
+          keys = re.findall(r"^([a-z-]+):", fm, re.M)
+          if len(d) > 1024 or any(c in d for c in "<>"):
+              errs.append("description over 1024 characters or contains angle brackets")
+          if not set(keys) <= {"name", "description", "license", "metadata", "allowed-tools"}:
+              errs.append(f"unexpected frontmatter keys: {keys}")
+          if skill.count("\n") > 500:
+              errs.append("SKILL.md over 500 lines")
+          short = j(f"{P}/.codex-plugin/plugin.json")["interface"]["shortDescription"]
+          if len(short) > 30:
+              errs.append(f"Codex shortDescription over 30 characters: {short!r}")
+          print("\n".join(errs) or "ok")
+          sys.exit(1 if errs else 0)
+          PY
+      - name: No local absolute paths in shipped files
+        run: "! grep -rnI -e '/home/' -e '/Users/' plugins/"
+      - name: No em or en dashes in shipped Markdown
+        run: "! grep -rnI -e '—' -e '–' --include='*.md' plugins adapters README.md AGENTS.md CLAUDE.md SECURITY.md CONTRIBUTING.md CHANGELOG.md PRIVACY.md"
+      - name: References over 100 lines open with a Covers line
+        run: |
+          rc=0
+          for f in "$S"/references/*.md; do
+            if [ "$(wc -l <"$f")" -gt 100 ] && ! head -12 "$f" | grep -q '^Covers:'; then
+              echo "no Covers line: $f"; rc=1
+            fi
+          done
+          exit $rc
+
+  skills-ref:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      # The PyPI release installs a CLI under a different name; pin the repo commit that ships `skills-ref`.
+      - name: Install skills-ref at a pinned commit
+        run: python3 -m pip install --disable-pip-version-check "git+https://github.com/agentskills/agentskills.git@69ef37e9424c0a7ea9dd2293b559e43ec8176379#subdirectory=skills-ref"
+      - run: skills-ref validate "$S"
+
+  claude-plugin-validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      # Validation needs no login and no network once installed.
+      - name: Install Claude Code at a pinned version
+        run: |
+          npm install -g --no-audit --no-fund @anthropic-ai/claude-code@2.1.296
+          claude --version || node "$(npm root -g)/@anthropic-ai/claude-code/install.cjs"
+          claude --version
+      - run: claude plugin validate --strict "$P"
+      - run: claude plugin validate --strict .
+
+  skills-cli-discovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      - name: npx skills finds exactly one public skill
+        run: |
+          npx --yes skills@1.7.2 add . --list | tee "$RUNNER_TEMP/list.txt"
+          grep -q 'Found 1 skill' "$RUNNER_TEMP/list.txt"
