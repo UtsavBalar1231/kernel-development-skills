@@ -1,38 +1,52 @@
 #!/usr/bin/env python3
-"""Emit a path-based kernel-change checklist for the current diff or paths.
+"""Print a path-based checklist (references to read, checks to run) for a kernel change.
 
-Always exits 0; the output is a checklist, not a verdict. By default the
-changed paths come from the unstaged and staged git diff; pass paths
-explicitly or use --against <rev> to cover committed work.
+The output is a Markdown checklist, not a verdict. Changed paths come from the
+unstaged and staged git diff unless you pass paths or --against REV. Commands
+are upstream `make` targets; if the tree documents its own build wrapper, run
+the equivalent targets through that wrapper instead.
 """
 
 from __future__ import annotations
 
 import argparse
+import re
 import subprocess
+import sys
 from dataclasses import dataclass, field
-from pathlib import Path
-
+from pathlib import Path, PurePosixPath
+from typing import Optional
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 
-FORBIDDEN_LAPIS_SOC_DTSI = {
-    "arch/arm64/boot/dts/rockchip/rk3576.dtsi",
-    "arch/arm64/boot/dts/rockchip/rk3576-linux.dtsi",
-    "arch/arm64/boot/dts/rockchip/rk3576-pinctrl.dtsi",
-}
+EPILOG = """\
+examples:
+  triage_kernel_change.py                        # unstaged and staged diff
+  triage_kernel_change.py --against origin/master
+  triage_kernel_change.py drivers/hwmon/foo.c Documentation/devicetree/bindings/hwmon/acme,foo.yaml
+
+exit codes:
+  0  always; the checklist is advisory
+  2  bad arguments
+"""
+
+BINDINGS_DIR = "Documentation/devicetree/bindings/"
+DTS_RE = re.compile(r"^arch/([^/]+)/boot/dts/(.+)\.(dts|dtsi|dtso)$")
+THERMAL_RE = re.compile(r"(?:^|[/_-])(?:thermal|cooling|hwmon|fan)(?:[/_.-]|$)")
+# Build wrappers that vendor, Android and BSP kernel trees commonly ship.
+WRAPPER_CANDIDATES = ("build.sh", "build/build.sh", "tools/bazel", "build/kernel/kleaf")
 
 
 @dataclass
 class Triage:
-    kind: str
+    kinds: list[str] = field(default_factory=list)
     references: set[str] = field(default_factory=set)
     checks: list[str] = field(default_factory=list)
     guardrails: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
 
 
-def git_changed_paths(against: str | None = None) -> list[str]:
+def git_changed_paths(against: Optional[str] = None) -> list[str]:
     if against:
         commands = [["git", "diff", against, "--name-only", "--diff-filter=ACMRT"]]
     else:
@@ -45,7 +59,9 @@ def git_changed_paths(against: str | None = None) -> list[str]:
     for command in commands:
         try:
             result = subprocess.run(command, check=True, text=True, capture_output=True)
-        except (OSError, subprocess.CalledProcessError):
+        except (OSError, subprocess.CalledProcessError) as error:
+            detail = getattr(error, "stderr", "") or str(error)
+            print(f"warning: {' '.join(command)} failed: {detail.strip()}", file=sys.stderr)
             continue
         for line in result.stdout.splitlines():
             path = line.strip()
@@ -60,198 +76,230 @@ def add_unique(items: list[str], value: str) -> None:
         items.append(value)
 
 
-def build_wrapper() -> str | None:
-    """Find a repo build wrapper from the cwd upward, stopping at the git root."""
-    directory = Path.cwd()
-    for candidate in [directory, *directory.parents]:
-        wrapper = candidate / "build.sh"
-        if wrapper.is_file():
-            if candidate == directory:
-                return "./build.sh"
-            return str(wrapper)
-        if (candidate / ".git").exists():
+def find_build_wrapper() -> Optional[str]:
+    """Look for a build wrapper from the cwd upward, stopping at the git root."""
+    cwd = Path.cwd()
+    for directory in [cwd, *cwd.parents]:
+        for candidate in WRAPPER_CANDIDATES:
+            if (directory / candidate).exists():
+                found = directory / candidate
+                return f"./{found.relative_to(cwd)}" if directory == cwd else str(found)
+        if (directory / ".git").exists():
             break
     return None
 
 
-def kmake_target(target: str) -> str:
-    wrapper = build_wrapper()
-    if wrapper is not None:
-        return f"{wrapper} kmake {target}"
-    return f"make {target}"
+def run(command: str, note: str = "") -> str:
+    return f"`{command}` ({note})" if note else f"`{command}`"
 
 
-def config_target(target: str = "olddefconfig") -> str:
-    wrapper = build_wrapper()
-    if wrapper is not None:
-        return f"{wrapper} kernel-config" if target == "kernel-config" else f"{wrapper} kmake {target}"
-    return f"make {target}"
+def object_target(path: str) -> str:
+    return str(PurePosixPath(path).with_suffix(".o"))
+
+
+COMMON_CHECKS = (
+    run("git diff --check"),
+    run("scripts/checkpatch.pl --strict <patch-file>", "or -g <commit> for committed work"),
+    run("scripts/get_maintainer.pl <patch-file>"),
+)
 
 
 def classify(raw_path: str) -> Triage:
-    path = Path(raw_path.replace("\\", "/")).as_posix()
-    name = Path(path).name
-    triage = Triage(kind="general kernel change")
+    path = PurePosixPath(raw_path.replace("\\", "/")).as_posix()
+    name = PurePosixPath(path).name
+    lowered = path.lower()
+    triage = Triage()
     refs = triage.references
     checks = triage.checks
-    guardrails = triage.guardrails
     notes = triage.notes
 
-    refs.add("references/kernel-workflow.md")
-    add_unique(checks, "git diff --check")
-    add_unique(checks, "scripts/get_maintainer.pl <changed-files-or-patch>")
+    if path.startswith(BINDINGS_DIR) and path.endswith((".yaml", ".yml")):
+        rel = path[len(BINDINGS_DIR) :]
+        triage.kinds.append("devicetree binding")
+        refs.add("devicetree.md")
+        add_unique(checks, run(f"make dt_binding_check DT_SCHEMA_FILES={rel}"))
+        add_unique(checks, run(f"make {rel}", "single-binding check, v7.0+"))
+        add_unique(notes, "Bindings are ABI. Subject prefix is `dt-bindings: <binding dir>:` for most subsystems.")
+        add_unique(notes, "Send the binding patch before the driver and DTS patches in the series.")
+        add_unique(notes, "dt_binding_check needs dtschema (`pip install dtschema`); v7.2+ also runs dt-check-style.")
 
-    if path in FORBIDDEN_LAPIS_SOC_DTSI:
-        refs.add("references/lapis-rk3576.md")
-        add_unique(guardrails, "Do not edit upstream SoC DTSI files for board-only changes.")
-        add_unique(checks, f"python3 {SCRIPT_DIR / 'check_lapis_guardrails.py'} {path}")
+    if path.startswith("include/dt-bindings/"):
+        triage.kinds.append("devicetree binding header")
+        refs.add("devicetree.md")
+        add_unique(notes, "Binding headers ship in the same patch as the binding schema that uses them.")
 
-    if path.startswith("Documentation/devicetree/bindings/"):
-        triage.kind = "devicetree binding"
-        refs.update({"references/device-tree-drivers.md", "references/ci-regression.md"})
-        add_unique(checks, kmake_target("dt_binding_check DT_SCHEMA_FILES=" + path))
-        add_unique(checks, "scripts/checkpatch.pl --strict <patch-file>")
-        add_unique(notes, "Binding changes are ABI changes; keep compatibility explicit.")
+    dts = DTS_RE.match(path)
+    if dts:
+        arch, stem, suffix = dts.groups()
+        triage.kinds.append("devicetree source")
+        refs.add("devicetree.md")
+        if suffix == "dts":
+            add_unique(checks, run(f"make ARCH={arch} CHECK_DTBS=y {stem}.dtb"))
+        elif suffix == "dtso":
+            add_unique(checks, run(f"make ARCH={arch} CHECK_DTBS=y {stem}.dtbo"))
+        else:
+            add_unique(checks, run(f"make ARCH={arch} CHECK_DTBS=y <vendor>/<board>.dtb", "each board including it"))
+            add_unique(
+                triage.guardrails,
+                "Shared .dtsi (SoC or SoM): put board-only wiring in the board .dts and leave "
+                "board-dependent nodes `status = \"disabled\"` here.",
+            )
+        add_unique(checks, run(f"make ARCH={arch} dtbs_check", "every DTB enabled by the current .config"))
+        add_unique(notes, "A plain `make <board>.dtb` runs no schema validation; keep CHECK_DTBS=y.")
+        add_unique(notes, "DTS patches go through the SoC maintainer tree, not the driver tree.")
 
-    if path.endswith((".dts", ".dtsi")):
-        triage.kind = "devicetree source"
-        refs.update({"references/device-tree-drivers.md", "references/lapis-rk3576.md"})
-        add_unique(checks, kmake_target("dtbs_check"))
-        add_unique(checks, kmake_target("<board-dtb-target>"))
-        add_unique(notes, "Confirm compatible strings and properties against binding schemas.")
-
-    if path.startswith("arch/arm64/boot/dts/rockchip/rk3576-lapis") or path.endswith(
-        "rk3576-rk806.dtsi"
-    ):
-        triage.kind = "RK3576/Lapis board DTS"
-        refs.update({"references/lapis-rk3576.md", "references/device-tree-drivers.md"})
-        add_unique(checks, f"python3 {SCRIPT_DIR / 'check_lapis_guardrails.py'} {path}")
-        add_unique(checks, "boot hardware when available and capture probe/runtime evidence")
-        add_unique(notes, "Use the Lapis board include, not upstream SoC DTSI, for board wiring.")
-
-    if path.startswith("drivers/"):
-        triage.kind = "kernel driver"
-        refs.update(
-            {
-                "references/device-tree-drivers.md",
-                "references/driver-api-cookbook.md",
-                "references/driver-review-checklists.md",
-                "references/debugging-testing.md",
-            }
-        )
-        add_unique(checks, "scripts/checkpatch.pl --strict <patch-file>")
-        add_unique(checks, f"python3 {SCRIPT_DIR / 'check_kernel_api_patterns.py'} {path}")
-        add_unique(checks, kmake_target("<focused-target>"))
-        add_unique(checks, "runtime probe/log validation on hardware or suitable emulator")
+    if path.startswith(("drivers/", "sound/")) and not name.startswith(("Kconfig", "Makefile")):
+        triage.kinds.append("kernel driver")
+        refs.update({"drivers.md", "review.md", "testing.md"})
+        if path.endswith(".c"):
+            add_unique(checks, run(f"python3 {SCRIPT_DIR / 'check_kernel_api_patterns.py'} {path}"))
+            add_unique(checks, run(f"make W=1 {object_target(path)}"))
+            add_unique(checks, run(f"make C=1 {object_target(path)}", "sparse"))
+        add_unique(checks, "probe and runtime validation on hardware or a suitable emulator")
         add_unique(
             notes,
             "Review API choice, resource lifetime, devm use, PM, locking, IRQ context, DMA, and error paths.",
         )
 
     if path.startswith("include/linux/"):
-        triage.kind = "kernel internal API"
-        refs.update(
-            {
-                "references/driver-api-cookbook.md",
-                "references/driver-review-checklists.md",
-                "references/kernel-workflow.md",
-            }
-        )
-        add_unique(checks, "scripts/checkpatch.pl --strict <patch-file>")
-        add_unique(checks, kmake_target("<focused-target>"))
+        triage.kinds.append("kernel internal API")
+        refs.update({"drivers.md", "review.md"})
+        add_unique(checks, run(f"scripts/kernel-doc -none -Wall {path}"))
+        add_unique(checks, "build every caller (`git grep` the changed symbols) with W=1")
         add_unique(notes, "Internal API changes need call-site review and subsystem maintainer routing.")
 
-    if name == "Kconfig" or path.startswith("arch/arm64/configs/") or path.endswith(".config"):
-        triage.kind = "Kconfig or kernel config"
-        refs.update({"references/kernel-workflow.md", "references/lapis-rk3576.md"})
-        add_unique(checks, config_target("kernel-config"))
-        add_unique(checks, config_target("olddefconfig"))
-        add_unique(checks, "compare requested fragment with resolved output/.config")
-        if path.endswith("rockchip_linux_defconfig"):
-            add_unique(guardrails, "Shared Rockchip defconfig affects more than Lapis.")
+    if path.startswith(("include/uapi/", "Documentation/ABI/")):
+        triage.kinds.append("userspace ABI")
+        refs.add("review.md")
+        if path.startswith("include/uapi/"):
+            add_unique(checks, run("scripts/check-uapi.sh -p <previous-release-tag>"))
+        add_unique(checks, "update Documentation/ABI/ and add or adjust a userspace-facing test when feasible")
+        add_unique(notes, "UAPI, sysfs, ioctl and netlink changes need compatibility review; Cc linux-api@vger.kernel.org.")
 
-    if "tools/testing/selftests/" in path or "kunit" in path.lower():
-        triage.kind = "kernel test"
-        refs.update({"references/debugging-testing.md", "references/ci-regression.md"})
-        add_unique(checks, "run the focused KUnit or kselftest target through repo-approved tooling")
-        add_unique(notes, "Preserve KTAP/kselftest output when using the result as evidence.")
+    is_config = (
+        name.startswith("Kconfig")
+        or re.match(r"^arch/[^/]+/configs/", path) is not None
+        or name.endswith(".config")
+    )
+    if is_config:
+        triage.kinds.append("Kconfig or kernel config")
+        refs.update({"build.md", "tree.md"})
+        if name.startswith("Kconfig"):
+            add_unique(checks, run("make kconfig-sym-check", "v7.2+; dangling symbol references"))
+        add_unique(checks, run("make olddefconfig", "then confirm the resolved .config values with scripts/diffconfig"))
+        if "/configs/" in path and name.endswith("defconfig"):
+            add_unique(checks, run(f"make {name} && make savedefconfig && diff defconfig {path}"))
+            add_unique(
+                notes,
+                "Shared defconfigs affect every board built from them; prefer a board fragment "
+                "(scripts/kconfig/merge_config.sh) when the tree supports one.",
+            )
 
-    if path.startswith("include/uapi/") or path.startswith("Documentation/ABI/"):
-        triage.kind = "kernel userspace ABI"
-        refs.update(
-            {
-                "references/kernel-workflow.md",
-                "references/device-tree-drivers.md",
-                "references/driver-review-checklists.md",
-            }
-        )
-        add_unique(checks, "update ABI documentation and add/adjust a userspace-facing test when feasible")
-        add_unique(notes, "UAPI, sysfs, ioctl, netlink, and documented ABI need compatibility review.")
+    if path.startswith("rust/") or path.endswith(".rs"):
+        triage.kinds.append("Rust kernel code")
+        refs.update({"build.md", "drivers.md"})
+        add_unique(checks, run("make LLVM=1 rustavailable"))
+        add_unique(checks, run("make LLVM=1 rustfmtcheck"))
+        add_unique(checks, run("make LLVM=1 CLIPPY=1 <focused-target>"))
+        if path.startswith("rust/"):
+            add_unique(checks, run("make LLVM=1 rusttest"))
+        add_unique(notes, "Minimum Rust and bindgen versions are in Documentation/process/changes.rst.")
 
-    thermal_terms = ("thermal", "fan", "cooling", "hwmon", "pwm-fan")
-    if any(term in path.lower() for term in thermal_terms):
-        refs.update({"references/lapis-rk3576.md", "references/debugging-testing.md"})
-        add_unique(checks, "verify thermal trips, cooling maps, fan cap, tach/fault observability")
-        add_unique(notes, "Tie RPM and safety claims to schematic/datasheet or live readings.")
+    if path.startswith("Documentation/") and path.endswith(".rst"):
+        triage.kinds.append("documentation")
+        refs.add("patches.md")
+        subdir = PurePosixPath(path).parts[1] if len(PurePosixPath(path).parts) > 2 else "."
+        add_unique(checks, run(f"make SPHINXDIRS={subdir} htmldocs", "no new warnings"))
 
-    # The forbidden classification must win over later, more generic matches.
-    if path in FORBIDDEN_LAPIS_SOC_DTSI:
-        triage.kind = "forbidden Lapis SoC DTSI edit"
+    if path == "MAINTAINERS":
+        triage.kinds.append("MAINTAINERS entry")
+        add_unique(checks, run("scripts/get_maintainer.pl --self-test=patterns"))
+        add_unique(notes, "Keep entries alphabetical and make every F: pattern match real files.")
 
+    if path.startswith("tools/testing/selftests/"):
+        parts = PurePosixPath(path).parts
+        target = parts[3] if len(parts) > 4 else "<target>"
+        triage.kinds.append("kselftest")
+        refs.add("testing.md")
+        add_unique(checks, run(f"make headers && make -C tools/testing/selftests TARGETS={target} run_tests"))
+        add_unique(notes, "Keep the KTAP output when using the result as evidence.")
+
+    is_kunit = (
+        name == ".kunitconfig"
+        or name.endswith("_kunit.c")
+        or (name.endswith("_test.c") and not path.startswith("tools/"))
+        or "kunit" in lowered
+    )
+    if is_kunit:
+        triage.kinds.append("KUnit test")
+        refs.add("testing.md")
+        kunitconfig = str(PurePosixPath(path).parent) if name == ".kunitconfig" else "<dir-with-.kunitconfig>"
+        add_unique(checks, run(f"./tools/testing/kunit/kunit.py run --kunitconfig={kunitconfig}"))
+        add_unique(checks, run("./tools/testing/kunit/kunit.py run --arch=x86_64 '<suite-glob>'", "QEMU instead of UML"))
+        add_unique(notes, "Keep the KTAP output when using the result as evidence.")
+
+    if THERMAL_RE.search(lowered):
+        refs.update({"drivers.md", "testing.md"})
+        add_unique(checks, "verify thermal trips, cooling maps, fan limits and fault reporting on the target")
+        add_unique(notes, "Tie RPM, temperature and safety claims to the datasheet or live readings.")
+
+    if not triage.kinds:
+        triage.kinds.append("general kernel change")
     return triage
 
 
-def render(paths: list[str]) -> str:
-    lines = ["# Kernel Change Triage", ""]
+def render(paths: list[str], wrapper: Optional[str]) -> str:
+    lines = ["# Kernel change triage", ""]
     if not paths:
-        lines.extend(
-            [
-                "No changed paths were found. Pass paths explicitly or run from a git worktree with a diff.",
-                "",
-            ]
-        )
-        return "\n".join(lines)
+        lines.append("No changed paths were found. Pass paths explicitly or use --against REV.")
+        return "\n".join(lines) + "\n"
 
-    lines.extend(
-        [
-            "Read nearest repo guidance first. Use the repo-approved build wrapper when present; otherwise translate checks to upstream `make` targets.",
-            "",
-        ]
-    )
-    for path in paths:
-        triage = classify(path)
-        normalized = Path(path.replace("\\", "/")).as_posix()
+    lines.append("Read the nearest repo guidance (MAINTAINERS entry, subsystem maintainer docs) first.")
+    lines.append("Before sending any change, read `patches.md` and run:")
+    lines.extend(f"- {check}" for check in COMMON_CHECKS)
+    lines.append("")
+    if wrapper:
+        lines.append(
+            f"This tree ships a build wrapper (`{wrapper}`): read its usage and run the checks "
+            "below through it instead of plain `make`."
+        )
+    lines.append("References are files under the skill's `references/` directory.")
+    lines.append("")
+    for raw_path in paths:
+        triage = classify(raw_path)
+        normalized = PurePosixPath(raw_path.replace("\\", "/")).as_posix()
         lines.append(f"## `{normalized}`")
         lines.append("")
-        lines.append(f"- Type: {triage.kind}")
-        lines.append("- Read: " + ", ".join(f"`{ref}`" for ref in sorted(triage.references)))
-        if triage.guardrails:
-            lines.append("- Guardrails:")
-            for guardrail in triage.guardrails:
-                lines.append(f"  - {guardrail}")
-        if triage.checks:
-            lines.append("- Checks:")
-            for check in triage.checks:
-                lines.append(f"  - `{check}`")
-        if triage.notes:
-            lines.append("- Notes:")
-            for note in triage.notes:
-                lines.append(f"  - {note}")
+        lines.append(f"- Type: {', '.join(triage.kinds)}")
+        if triage.references:
+            lines.append("- Read: " + ", ".join(f"`{ref}`" for ref in sorted(triage.references)))
+        for title, items in (
+            ("Guardrails", triage.guardrails),
+            ("Checks", triage.checks),
+            ("Notes", triage.notes),
+        ):
+            if items:
+                lines.append(f"- {title}:")
+                lines.extend(f"  - {item}" for item in items)
         lines.append("")
     return "\n".join(lines)
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("paths", nargs="*", help="Changed paths. Defaults to git diff paths.")
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        epilog=EPILOG,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument("paths", nargs="*", help="changed paths, relative to the kernel root (default: git diff)")
     parser.add_argument(
         "--against",
         metavar="REV",
-        help="Diff against REV (e.g. HEAD~1, origin/main) instead of the working tree/index.",
+        help="use files changed since REV (e.g. HEAD~1, origin/master) instead of the working tree diff",
     )
     args = parser.parse_args()
     paths = args.paths or git_changed_paths(args.against)
-    print(render(paths))
+    print(render(paths, find_build_wrapper()))
     return 0
 
 
