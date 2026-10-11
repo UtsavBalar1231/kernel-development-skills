@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: neg-docker-sysctl
+description: 'Near miss, should not trigger. Per-container sysctl in Docker Compose.'
+tags: [trigger, should-not-trigger, validation]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'how do I set net.core.somaxconn for a single docker compose service? `sysctls:` in compose seems to be ignored and I don''t want to change it on the host'
+graders:
+  - name: skill-not-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'
+    min: 0
+    max: 0
+    arm: both

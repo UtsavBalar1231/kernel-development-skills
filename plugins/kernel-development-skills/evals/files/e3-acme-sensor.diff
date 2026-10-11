@@ -1,0 +1,102 @@
+diff --git a/drivers/hwmon/acme-sensor.c b/drivers/hwmon/acme-sensor.c
+new file mode 100644
+index 000000000000..3f1c2a9d7e01
+--- /dev/null
++++ b/drivers/hwmon/acme-sensor.c
+@@ -0,0 +1,96 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Acme AS100 temperature sensor
++ */
++
++#include <linux/gpio.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
++#include <linux/slab.h>
++#include <linux/string.h>
++
++#define AS100_REG_TEMP	0x00
++#define AS100_REG_CTRL	0x04
++
++struct as100_pdata {
++	const char *label;
++	int reset_gpio;
++};
++
++struct as100 {
++	void __iomem *base;
++	char name[16];
++	int reset_gpio;
++	bool busy;
++};
++
++static int as100_probe(struct platform_device *pdev)
++{
++	struct as100_pdata *pdata = dev_get_platdata(&pdev->dev);
++	struct resource *res;
++	struct as100 *st;
++	int ret;
++
++	st = devm_kzalloc(&pdev->dev, sizeof(*st), GFP_KERNEL);
++	if (!st)
++		return -ENOMEM;
++
++	strcpy(st->name, pdata->label);
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	st->base = ioremap(res->start, resource_size(res));
++	if (!st->base)
++		return -ENOMEM;
++
++	st->reset_gpio = pdata->reset_gpio;
++	ret = gpio_request(st->reset_gpio, "as100-reset");
++	if (ret)
++		return ret;
++	gpio_direction_output(st->reset_gpio, 0);
++
++	pm_runtime_enable(&pdev->dev);
++
++	ret = pm_runtime_resume_and_get(&pdev->dev);
++	if (ret)
++		return ret;
++
++	writel(1, st->base + AS100_REG_CTRL);
++	pm_runtime_put(&pdev->dev);
++
++	platform_set_drvdata(pdev, st);
++	return 0;
++}
++
++static int as100_remove(struct platform_device *pdev)
++{
++	struct as100 *st = platform_get_drvdata(pdev);
++
++	if (st->busy)
++		return -EBUSY;
++
++	gpio_free(st->reset_gpio);
++	iounmap(st->base);
++	return 0;
++}
++
++static const struct of_device_id as100_of_match[] = {
++	{ .compatible = "acme,as100" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, as100_of_match);
++
++static struct platform_driver as100_driver = {
++	.probe = as100_probe,
++	.remove = as100_remove,
++	.driver = {
++		.name = "acme-as100",
++		.of_match_table = as100_of_match,
++	},
++};
++module_platform_driver(as100_driver);
++
++MODULE_DESCRIPTION("Acme AS100 temperature sensor driver");
++MODULE_LICENSE("GPL");

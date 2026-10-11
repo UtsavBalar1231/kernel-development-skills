@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: pos-kunit-linux-next
+description: 'Should trigger. KUnit failure that only shows up on linux-next.'
+tags: [trigger, should-trigger, train]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'my kunit test for the regmap cache sync passes on mainline but fails on linux-next. log says `# test_cache_sync_after_reset: EXPECTATION FAILED at drivers/base/regmap/regmap-kunit.c:812`. how do i find which commit in next broke it, and is there a quick way to rerun just that suite?'
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'

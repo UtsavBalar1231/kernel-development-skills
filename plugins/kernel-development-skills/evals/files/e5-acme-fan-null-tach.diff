@@ -1,0 +1,14 @@
+diff --git a/drivers/hwmon/acme-fan.c b/drivers/hwmon/acme-fan.c
+index 1a2b3c4d5e6f..7a8b9c0d1e2f 100644
+--- a/drivers/hwmon/acme-fan.c
++++ b/drivers/hwmon/acme-fan.c
+@@ -41,6 +41,9 @@ static int acme_fan_read(struct device *dev, enum hwmon_sensor_types type,
+ {
+ 	struct acme_fan *fan = dev_get_drvdata(dev);
+ 
++	if (!fan->tach)
++		return -ENODATA;
++
+ 	*val = readl(fan->tach + ACME_FAN_TACH);
+ 	return 0;
+ }

@@ -27,8 +27,8 @@ https://docs.kernel.org/dev-tools/ktap.html	official docs	current	primary	promot
 https://docs.kernel.org/dev-tools/checkpatch.html	official docs	current	primary	promote	checkpatch semantics
 https://docs.kernel.org/dev-tools/sparse.html	official docs	current	primary	promote	Sparse static analysis
 https://docs.kernel.org/dev-tools/coccinelle.html	official docs	current	primary	promote	Semantic patching
-https://docs.kernel.org/dev-tools/gdb-kernel-debugging.html	official docs	current	primary	promote	GDB vmlinux helpers
-https://docs.kernel.org/dev-tools/kgdb.html	official docs	current	primary	promote	KGDB/KDB
+https://docs.kernel.org/dev-tools/gdb-kernel-debugging.html	official docs	current	primary	promote	GDB vmlinux helpers; moved to process/debugging/ in v6.14, path valid for older trees
+https://docs.kernel.org/dev-tools/kgdb.html	official docs	current	primary	promote	KGDB/KDB; moved to process/debugging/kgdb.html in v6.14, path valid for older trees
 https://docs.kernel.org/dev-tools/kasan.html	official docs	current	primary	promote	KASAN memory bugs
 https://docs.kernel.org/dev-tools/kmsan.html	official docs	current	primary	promote	KMSAN uninitialized memory
 https://docs.kernel.org/dev-tools/kcsan.html	official docs	current	primary	promote	KCSAN races
@@ -131,8 +131,8 @@ https://arxiv.org/abs/2504.09474	paper	2025	secondary	watch	Out-of-tree patch mi
 https://arxiv.org/abs/2510.08918	paper	2025	secondary	watch	Syzkaller seed generation
 https://arxiv.org/abs/2603.24825	paper	2026	secondary	watch	Patch validation at scale
 https://arxiv.org/abs/2603.29919	paper	2026	secondary	promote	Skill token efficiency
-https://developers.openai.com/codex/skills/	official docs	current	primary	promote	Codex skill structure
-https://docs.claude.com/en/docs/claude-code/skills	official docs	current	primary	promote	Claude skills
+https://developers.openai.com/codex/skills/	official docs	current	primary	promote	Codex skill structure; now redirects to learn.chatgpt.com/docs/build-skills
+https://docs.claude.com/en/docs/claude-code/skills	official docs	current	primary	promote	Claude skills; now at code.claude.com/docs/en/skills
 https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices	official docs	current	primary	promote	Skill best practices
 https://agentskills.io/skill-creation/best-practices	standard docs	current	primary	promote	Agent Skills best practices
 https://agentskills.io/skill-creation/evaluating-skills	standard docs	current	primary	promote	Skill evaluation
@@ -142,3 +142,147 @@ https://www.reddit.com/r/LinuxTeck/comments/1tnvyl2/linux_kernel_maintainers_are
 https://www.reddit.com/r/embedded/comments/11eyz2x	social	2023	tertiary	watch	Driver patch process novice pain points
 https://www.reddit.com/r/linux/comments/17f57sm	social	2023	tertiary	watch	Patch submission friction lead
 https://www.reddit.com/r/kernel/comments/mvq6qd	social	2021	tertiary	watch	Trivial patch policy discussion lead
+https://github.com/agentskills/agentskills	standard docs	2026-08-04	primary	promote	Spec source and skills-ref reference validator
+https://agentskills.io/home	standard docs	current	primary	promote	Agent Skills adopters list
+https://agentskills.io/skill-creation/optimizing-descriptions	standard docs	current	primary	promote	Trigger evals and description tuning
+https://agentskills.io/skill-creation/using-scripts	standard docs	current	primary	promote	Script design for skills
+https://code.claude.com/docs/en/skills	official docs	current	primary	promote	Claude Code skills, listing budget, invocation controls
+https://code.claude.com/docs/en/memory	official docs	current	primary	promote	CLAUDE.md and AGENTS.md loading rules
+https://code.claude.com/docs/en/plugin-evals	official docs	current	primary	promote	claude plugin eval case format and graders
+https://code.claude.com/docs/en/plugins-reference	official docs	current	primary	promote	Claude Code plugin manifest
+https://code.claude.com/docs/en/plugin-marketplaces	official docs	current	primary	promote	Claude Code marketplace format
+https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md	tool docs	current	primary	promote	skill-creator eval and description loop
+https://github.com/anthropics/skills/blob/main/skills/skill-creator/references/schemas.md	tool docs	current	primary	promote	skill-creator evals.json and grading schemas
+https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills	blog	2025	primary	promote	Agent Skills design rationale
+https://learn.chatgpt.com/docs/build-skills	official docs	current	primary	promote	Codex skills, listing budget, openai.yaml
+https://learn.chatgpt.com/docs/agent-configuration/agents-md	official docs	current	primary	promote	Codex AGENTS.md loading
+https://developers.openai.com/codex/plugins/build	official docs	current	primary	promote	Codex plugin packaging
+https://github.com/openai/skills/blob/main/skills/.system/skill-creator/scripts/quick_validate.py	tool docs	2026-06-22	primary	watch	Codex frontmatter allowlist; repo deprecated
+https://github.com/openai/codex/blob/27065a91ccbf5ba8532844be3777fcf83b77820d/codex-rs/core-plugins/src/marketplace.rs	tool docs	current	primary	promote	Codex manifest and marketplace search order
+https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills	official docs	current	primary	promote	Copilot cloud agent skills
+https://docs.github.com/en/copilot/concepts/agents/about-agent-skills	official docs	current	primary	promote	Copilot agent skills concepts
+https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills	official docs	current	primary	promote	Copilot CLI skills
+https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-skills	official docs	current	primary	promote	Copilot coding agent skills
+https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference	official docs	current	primary	promote	Copilot CLI plugin and marketplace reference
+https://docs.github.com/en/copilot/concepts/agents/copilot-cli/about-cli-plugins	official docs	current	primary	promote	Copilot CLI plugins
+https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions	official docs	current	primary	promote	Copilot AGENTS.md support
+https://code.visualstudio.com/docs/copilot/customization/agent-skills	official docs	current	primary	promote	VS Code agent skills
+https://code.visualstudio.com/docs/copilot/customization/agent-plugins	official docs	current	primary	promote	VS Code agent plugins
+https://cli.github.com/manual/gh_skill_install	tool docs	current	primary	promote	gh skill install
+https://cli.github.com/manual/gh_skill_publish	tool docs	current	primary	promote	gh skill publish and dry-run validation
+https://geminicli.com/docs/cli/skills/	official docs	current	primary	promote	Gemini CLI skills
+https://geminicli.com/docs/cli/creating-skills/	official docs	current	primary	promote	Gemini CLI skill authoring
+https://geminicli.com/docs/cli/tutorials/skills-getting-started/	official docs	current	primary	promote	Gemini CLI skill activation
+https://geminicli.com/docs/extensions/reference/	official docs	current	primary	promote	gemini-extension.json reference
+https://geminicli.com/docs/cli/gemini-md/	official docs	current	primary	promote	Gemini context files
+https://antigravity.google/docs/skills	official docs	current	primary	promote	Antigravity skills
+https://antigravity.google/docs/plugins	official docs	current	primary	watch	Antigravity CLI plugins
+https://cursor.com/docs/context/skills	official docs	current	primary	promote	Cursor skills
+https://cursor.com/docs/plugins	official docs	current	primary	promote	Cursor plugins
+https://cursor.com/docs/reference/plugins	official docs	current	primary	promote	Cursor plugin manifest reference
+https://cursor.com/docs/context/rules	official docs	current	primary	promote	Cursor rules and AGENTS.md
+https://github.com/cursor/plugin-template	tool docs	current	primary	promote	Cursor plugin and marketplace template
+https://opencode.ai/docs/skills/	official docs	current	primary	promote	OpenCode skills
+https://opencode.ai/docs/rules/	official docs	current	primary	promote	OpenCode AGENTS.md rules
+https://agent-plugins.org/specification	standard docs	current	primary	promote	Agent Plugins specification
+https://agent-plugins.org/schemas/1.0.0/plugin.schema.json	standard docs	current	primary	promote	Agent Plugins plugin.json schema
+https://agents.md	standard docs	current	primary	promote	AGENTS.md format and adopters
+https://docs.devin.ai/desktop/cascade/skills	official docs	current	primary	promote	Windsurf/Devin Desktop skills
+https://docs.devin.ai/desktop/cascade/agents-md	official docs	current	primary	promote	Windsurf/Devin Desktop AGENTS.md
+https://ampcode.com/docs/customize/skills	official docs	current	primary	promote	Amp skills
+https://ampcode.com/docs/customize/agents-md	official docs	current	primary	promote	Amp AGENTS.md
+https://goose-docs.ai/docs/guides/context-engineering/using-skills/	official docs	current	primary	promote	Goose skills
+https://kiro.dev/docs/skills/	official docs	current	primary	promote	Kiro skills
+https://kiro.dev/docs/powers/	official docs	current	primary	watch	Kiro powers packaging
+https://kiro.dev/docs/steering/	official docs	current	primary	promote	Kiro steering and AGENTS.md
+https://docs.cline.bot/customization/skills	official docs	current	primary	promote	Cline skills
+https://docs.cline.bot/customization/cline-rules	official docs	current	primary	promote	Cline rules and AGENTS.md
+https://roocodeinc.github.io/Roo-Code/features/skills	official docs	current	primary	promote	Roo Code skills
+https://kilo.ai/docs/customize/skills	official docs	current	primary	promote	Kilo Code skills
+https://kilo.ai/docs/customize/agents-md	official docs	current	primary	promote	Kilo Code AGENTS.md
+https://github.com/continuedev/continue	tool docs	current	primary	watch	Continue skills loader (source only)
+https://zed.dev/docs/ai/skills	official docs	current	primary	promote	Zed skills
+https://junie.jetbrains.com/docs/agent-skills.html	official docs	current	primary	promote	Junie skills
+https://junie.jetbrains.com/docs/guidelines-and-memory.html	official docs	current	primary	promote	Junie AGENTS.md
+https://docs.factory.com/cli/configuration/skills	official docs	current	primary	promote	Factory Droid skills
+https://docs.factory.com/cli/configuration/plugins	official docs	current	primary	promote	Factory Droid plugins
+https://qwenlm.github.io/qwen-code-docs/en/users/features/skills/	official docs	current	primary	promote	Qwen Code skills
+https://qwenlm.github.io/qwen-code-docs/en/users/extension/introduction/	official docs	current	primary	watch	Qwen Code extensions
+https://docs.augmentcode.com/cli/skills	official docs	current	primary	promote	Auggie skills
+https://docs.augmentcode.com/cli/plugins	official docs	current	primary	watch	Auggie plugins
+https://docs.warp.dev/agent-platform/capabilities/skills/	official docs	current	primary	promote	Warp skills
+https://docs.openhands.dev/overview/skills	official docs	current	primary	promote	OpenHands skills
+https://docs.openhands.dev/overview/plugins	official docs	current	primary	promote	OpenHands plugins
+https://github.com/charmbracelet/crush	tool docs	current	primary	promote	Crush skills paths
+https://github.com/mistralai/mistral-vibe	tool docs	current	primary	promote	Mistral Vibe skills paths
+https://moonshotai.github.io/kimi-cli/en/customization/skills.html	official docs	current	primary	promote	Kimi CLI skills
+https://aider.chat/docs/usage/conventions.html	official docs	current	primary	promote	Aider conventions files; no skills support
+https://github.com/vercel-labs/skills	tool docs	current	primary	promote	npx skills cross-harness installer
+https://skills.sh/docs	tool docs	current	primary	watch	skills.sh registry
+https://github.com/numman-ali/openskills	tool docs	current	secondary	watch	openskills installer
+https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices	official docs	current	primary	promote	Claude prompting; emphatic language overtriggers
+https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5	official docs	current	primary	promote	Prior-model skills too prescriptive
+https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5-1	official docs	current	primary	promote	Scope boundaries and reasoning-echo refusals
+https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-sonnet-5	official docs	current	primary	promote	Literal instruction following
+https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-sonnet-5-5	official docs	current	primary	promote	Thinking control via effort, not text
+https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5	official docs	current	primary	promote	Opus 5.5 prompting
+https://developers.openai.com/api/docs/models	official docs	current	primary	promote	Current OpenAI models
+https://developers.openai.com/api/docs/guides/prompt-guidance	official docs	current	primary	promote	GPT-6 sensitivity to skill and AGENTS.md text
+https://developers.openai.com/api/docs/guides/latest-model/gpt-6-astra.md	official docs	current	primary	promote	GPT-6 Astra prompting
+https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6	official docs	current	primary	promote	Avoid unnecessary absolute rules
+https://ai.google.dev/gemini-api/docs/models	official docs	current	primary	promote	Current Gemini models
+https://ai.google.dev/gemini-api/docs/prompting-strategies	official docs	current	primary	promote	Gemini prompting strategies
+https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals	blog	2026-01	secondary	watch	Measured skill undertriggering, single suite
+https://arxiv.org/abs/2609.26863	paper	2026-09	secondary	watch	Skill loading controller overtriggering
+https://docs.kernel.org/process/coding-assistants.html	official docs	current	primary	promote	AI agents: no Signed-off-by, use Assisted-by
+https://docs.kernel.org/process/generated-content.html	official docs	current	primary	promote	Tool-generated contribution disclosure
+https://docs.kernel.org/process/backporting.html	official docs	current	primary	promote	Backport workflow and prerequisites
+https://docs.kernel.org/process/security-bugs.html	official docs	current	primary	promote	Security bug reporting
+https://docs.kernel.org/process/cve.html	official docs	current	primary	promote	Kernel CNA and CVE assignment
+https://docs.kernel.org/process/threat-model.html	official docs	current	primary	promote	Kernel threat model
+https://docs.kernel.org/process/changes.html	official docs	current	primary	promote	Minimum toolchain versions
+https://docs.kernel.org/process/maintainer-soc.html	official docs	current	primary	promote	SoC tree DTS layering and routing
+https://docs.kernel.org/process/maintainer-netdev.html	official docs	current	primary	promote	netdev posting rules
+https://docs.kernel.org/maintainer/modifying-patches.html	official docs	current	primary	promote	Maintainer patch modification
+https://docs.kernel.org/maintainer/feature-and-driver-maintainers.html	official docs	current	primary	promote	Driver maintainer duties
+https://docs.kernel.org/process/debugging/index.html	official docs	current	primary	promote	Debugging docs root (v6.14+)
+https://docs.kernel.org/process/debugging/kgdb.html	official docs	current	primary	promote	KGDB/KDB (moved from dev-tools in v6.14)
+https://docs.kernel.org/process/debugging/gdb-kernel-debugging.html	official docs	current	primary	promote	GDB helpers (moved from dev-tools in v6.14)
+https://docs.kernel.org/process/debugging/driver_development_debugging_guide.html	official docs	current	primary	promote	Driver debugging guide
+https://docs.kernel.org/dev-tools/checkuapi.html	official docs	current	primary	promote	UAPI compatibility checker
+https://docs.kernel.org/dev-tools/container.html	official docs	current	primary	promote	In-tree container builds
+https://docs.kernel.org/dev-tools/context-analysis.html	official docs	current	primary	watch	Clang context analysis (Clang 23+)
+https://docs.kernel.org/kbuild/llvm.html	official docs	current	primary	promote	LLVM/Clang builds
+https://docs.kernel.org/rust/index.html	official docs	current	primary	promote	Rust in the kernel
+https://docs.kernel.org/rust/general-information.html	official docs	current	primary	promote	Rust toolchain minimums
+https://www.kernel.org/releases.json	official docs	current	primary	promote	Machine-readable mainline, stable and LTS releases
+https://www.kernel.org/category/releases.html	official docs	current	primary	promote	Release cadence and LTS EOL dates
+https://git.kernel.org/pub/scm/utils/b4/b4.git	tool docs	2026-08-05	primary	promote	b4 source and release notes (v0.16.0)
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md	tool docs	current	primary	promote	regzbot command reference
+https://docs.kernelci.org/	tool docs	current	primary	promote	KernelCI docs root
+https://kci.dev/	tool docs	current	primary	promote	kci-dev CLI
+https://www.linaro.org/blog/linaro-transfers-kernel-building-and-testing-tools-to-the-kernelci-project/	blog	2025-12-19	primary	promote	TuxMake, TuxRun, TuxLava moved to KernelCI
+https://github.com/kernelci/tuxmake	tool docs	current	primary	promote	TuxMake repository
+https://github.com/kernelci/tuxrun	tool docs	current	primary	promote	TuxRun repository
+https://lwn.net/Articles/1049831/	article	2025-12	secondary	promote	End of the kernel Rust experiment
+https://lwn.net/Articles/1050308/	article	2025-12	secondary	promote	Rust experiment concluded upstream
+https://lwn.net/Articles/1049982/	article	2025-12	secondary	watch	2025 Maintainers Summit
+https://github.com/torvalds/linux/commit/8167c1f071426706c233e93ecfd13aba7d5c06c8	official docs	2026	primary	watch	Example kernel test robot Reported-by/Closes tags
+https://docs.kernel.org/core-api/cleanup.html	official docs	current	primary	promote	Scope-based cleanup helpers
+https://docs.kernel.org/core-api/symbol-namespaces.html	official docs	current	primary	promote	Symbol namespaces as string literals
+https://docs.kernel.org/core-api/dma-api.html	official docs	current	primary	promote	DMA API including IOVA helpers
+https://docs.kernel.org/filesystems/sysfs.html	official docs	current	primary	promote	sysfs_emit for show()
+https://docs.kernel.org/mm/highmem.html	official docs	current	primary	promote	kmap_local_page over kmap
+https://docs.kernel.org/devicetree/bindings/writing-bindings.html	official docs	current	primary	promote	Binding DOs and DON'Ts
+https://docs.kernel.org/devicetree/bindings/ABI.html	official docs	current	primary	promote	Devicetree ABI stability
+https://pypi.org/project/dtschema/	tool docs	2026-09-18	primary	promote	dtschema releases
+https://docs.kernel.org/dev-tools/kunit/run_wrapper.html	official docs	current	primary	promote	kunit.py options
+https://docs.kernel.org/locking/lockdep-design.html	official docs	current	primary	promote	Lockdep design
+https://docs.kernel.org/admin-guide/pstore-blk.html	official docs	current	primary	promote	pstore block backend
+https://docs.kernel.org/admin-guide/kdump/kdump.html	official docs	current	primary	promote	Kdump setup
+https://docs.kernel.org/bpf/drgn.html	official docs	current	primary	promote	drgn in kernel docs
+https://elixir.bootlin.com/linux/latest/source	tool docs	current	secondary	promote	Cross-referenced source for symbol lookups
+https://github.com/osandov/drgn	tool docs	current	primary	promote	drgn programmable debugger
+https://github.com/anakryiko/retsnoop	tool docs	current	primary	promote	retsnoop error tracing
+https://github.com/bpftrace/bpftrace	tool docs	current	primary	promote	bpftrace repository (moved from iovisor)
+https://github.com/crash-utility/crash	tool docs	current	primary	promote	crash utility

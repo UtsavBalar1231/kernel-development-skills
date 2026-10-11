@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: neg-stm32-i2c-firmware
+description: 'Near miss, should not trigger. Microcontroller firmware I2C bus recovery.'
+tags: [trigger, should-not-trigger, train]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'On an STM32F4 running FreeRTOS, my I2C reads from a temp sensor start returning 0xFF after a few minutes and HAL_I2C_Master_Receive times out. How do I detect a stuck bus and recover it in firmware?'
+graders:
+  - name: skill-not-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'
+    min: 0
+    max: 0
+    arm: both

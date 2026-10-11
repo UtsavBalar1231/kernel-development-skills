@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: pos-syzbot-fix
+description: 'Should trigger. Responding to a syzbot report with a fix.'
+tags: [trigger, should-trigger, validation]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'syzbot emailed me: ''KASAN: null-ptr-deref Read in hid_input_report'' with a C reproducer, bisected to my commit from last cycle. I''ve got a one-line fix. How do I ask syzbot to test it and which tags belong in the patch?'
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'

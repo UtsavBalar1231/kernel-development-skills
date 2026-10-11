@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: pos-defconfig-diff-review
+description: 'Should trigger. Review of an arm64 defconfig change before sending.'
+tags: [trigger, should-trigger, train]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'Can you review this defconfig diff before I send it upstream? I turned on CONFIG_KASAN_GENERIC and dropped CONFIG_DEBUG_INFO_BTF in arch/arm64/configs/defconfig, but savedefconfig also reordered like 40 other lines and I''m not sure if that''s ok to include.'
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'

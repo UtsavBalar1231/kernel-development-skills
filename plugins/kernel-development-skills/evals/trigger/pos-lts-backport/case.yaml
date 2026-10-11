@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: pos-lts-backport
+description: 'Should trigger. Backporting an upstream USB fix to a 6.6-based product tree.'
+tags: [trigger, should-trigger, train]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'I need to backport 5f2e8a1c3b9d ("usb: dwc3: gadget: fix runtime PM race on disconnect") to our 6.6-based product tree. It doesnt apply cleanly because the function was split in 6.9. What''s the right way to do the backport and what should the commit message say so it''s traceable to upstream?'
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'

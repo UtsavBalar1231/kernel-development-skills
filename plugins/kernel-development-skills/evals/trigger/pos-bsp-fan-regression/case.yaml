@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: pos-bsp-fan-regression
+description: 'Should trigger. Thermal cooling regression after a BSP rebase.'
+tags: [trigger, should-trigger, validation]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'after rebasing our BSP onto the newer LTS the board fan doesn''t spin anymore. pwm-fan probes fine, but the cooling device cur_state sits at 0 even when the soc is at 80C. the thermal zone and cooling-maps live in the board dts. where should I start looking?'
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'

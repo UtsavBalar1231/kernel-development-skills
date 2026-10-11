@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: pos-kasan-uaf-unbind
+description: 'Should trigger. Use-after-free on unbind caused by teardown ordering.'
+tags: [trigger, should-trigger, train]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'Got a KASAN slab-use-after-free when I unbind my platform device via sysfs. Stack shows my work function running after remove() returned; the struct was devm_kzalloc''d and I call destroy_workqueue() in remove. How do I fix the teardown order?'
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'

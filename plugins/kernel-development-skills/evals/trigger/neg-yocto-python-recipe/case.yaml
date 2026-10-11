@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: neg-yocto-python-recipe
+description: 'Near miss, should not trigger. Yocto recipe for a Python application.'
+tags: [trigger, should-not-trigger, train]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'my yocto recipe for a python app fails in do_install now that the project moved from setup.py to pyproject.toml. what''s the scarthgap way to write the .bb so it installs with pip/hatchling?'
+graders:
+  - name: skill-not-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'
+    min: 0
+    max: 0
+    arm: both

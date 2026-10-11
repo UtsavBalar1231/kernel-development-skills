@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: pos-i2c-probe-defer
+description: 'Should trigger. I2C device stuck in deferred probe.'
+tags: [trigger, should-trigger, train]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'why does my i2c driver defer probe forever?? dmesg only shows `i2c 2-0048: deferred probe pending: (reason unknown)`. the vdd regulator is defined in the dts afaik and the driver uses devm_regulator_get(). what should I check'
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'

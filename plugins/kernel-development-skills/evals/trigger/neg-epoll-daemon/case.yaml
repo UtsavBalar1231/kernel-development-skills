@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: neg-epoll-daemon
+description: 'Near miss, should not trigger. Userspace epoll event loop.'
+tags: [trigger, should-not-trigger, train]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'My C daemon (userspace only, Ubuntu 24.04) uses epoll on ~2k sockets and occasionally misses EPOLLIN after a client reconnects. I''m using EPOLLET. Can you sanity check my event-loop logic for edge-triggered mode?'
+graders:
+  - name: skill-not-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'
+    min: 0
+    max: 0
+    arm: both

@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: neg-dmesg-log-parser
+description: 'Near miss, should not trigger. Python script that parses a saved dmesg log.'
+tags: [trigger, should-not-trigger, validation]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'Write a Python script that reads a saved dmesg log file and counts USB disconnect events per device (vendor:product), then writes a CSV sorted by count.'
+graders:
+  - name: skill-not-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'
+    min: 0
+    max: 0
+    arm: both

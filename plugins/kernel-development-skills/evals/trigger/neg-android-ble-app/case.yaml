@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: neg-android-ble-app
+description: 'Near miss, should not trigger. Android app Bluetooth LE scanning.'
+tags: [trigger, should-not-trigger, train]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'In my Android app the BLE scan stops returning results once the screen turns off on a Pixel 8 (Kotlin, targetSdk 35). How do I keep scanning in the background without draining the battery?'
+graders:
+  - name: skill-not-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'
+    min: 0
+    max: 0
+    arm: both

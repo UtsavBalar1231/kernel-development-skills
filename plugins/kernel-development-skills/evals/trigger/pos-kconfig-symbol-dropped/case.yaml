@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: pos-kconfig-symbol-dropped
+description: 'Should trigger. Kconfig symbol silently dropped by olddefconfig.'
+tags: [trigger, should-trigger, validation]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'I added a Kconfig entry SENSORS_ACME_FAN with `depends on I2C && OF` and put CONFIG_SENSORS_ACME_FAN=m in my board config fragment, but after olddefconfig it''s gone from .config. What am I missing and how do I debug which dependency is unmet?'
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'

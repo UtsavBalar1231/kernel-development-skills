@@ -1,0 +1,108 @@
+{
+  "skill_name": "kernel-development-skills",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add a devicetree binding for a new I2C fan controller, compatible \"acme,fc100\", and wire it into our board DTS. Show me the validation commands you would run and how the patches should be split for upstream.",
+      "expected_output": "A YAML binding schema under the right Documentation/devicetree/bindings/ directory with the preferred dual license and correct $id/$schema, real kbuild validation commands, and a series ordered binding first, driver second, DTS last, addressed to the devicetree list.",
+      "files": [],
+      "assertions": [
+        "The binding file path is under Documentation/devicetree/bindings/ and the file is named acme,fc100.yaml",
+        "The binding's SPDX line is (GPL-2.0-only OR BSD-2-Clause)",
+        "$id is http://devicetree.org/schemas/<dir>/acme,fc100.yaml# with <dir> matching the file's location, and $schema is http://devicetree.org/meta-schemas/core.yaml#",
+        "The schema has exactly one top-level additionalProperties or unevaluatedProperties key, set to false",
+        "Validation includes make dt_binding_check with DT_SCHEMA_FILES (or the single-binding make <dir>/acme,fc100.yaml target) and a DTB check that uses CHECK_DTBS=y or make dtbs_check",
+        "Every make target and variable used exists in mainline kbuild; none are invented",
+        "The series puts the binding patch before the driver patch and the DTS patch last",
+        "The binding patch subject starts with dt-bindings: followed by the binding directory",
+        "devicetree@vger.kernel.org is a recipient, or recipients are derived from scripts/get_maintainer.pl output"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "This commit broke USB resume for a user since v6.8; the culprit is commit abc123def456. Write the commit message trailer block for the fix.",
+      "expected_output": "A trailer block with a Fixes: tag using the 12-character SHA and quoted subject, Reported-by: immediately followed by Closes: (or Link: for a partial fix) with a public URL, Cc: stable@vger.kernel.org, no invented review tags, and a note that the fix lands in mainline before stable picks it up.",
+      "files": [],
+      "assertions": [
+        "Contains Fixes: abc123def456 followed by the culprit's subject in parentheses and double quotes, or a clearly marked placeholder with an instruction to take the subject from git log",
+        "Reported-by: is immediately followed by a Closes: or Link: line that holds a public report URL or a clearly marked placeholder for one",
+        "Contains Cc: stable@vger.kernel.org",
+        "States that the fix must be merged into mainline before stable picks it up",
+        "Adds no Tested-by:, Reviewed-by: or Acked-by: tags that the user did not provide",
+        "Does not fill in a Signed-off-by: identity on the user's behalf"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Review this platform driver patch before I send it to the hwmon list (attached as e3-acme-sensor.diff). Target is current mainline.",
+      "expected_output": "A review that flags the error-returning remove() callback, strcpy() into a fixed buffer, the raw ioremap() of a platform resource, the legacy integer GPIO calls, and the unbalanced pm_runtime_enable(), each with the current replacement API, plus a recommendation to run checkpatch.",
+      "files": [
+        "evals/files/e3-acme-sensor.diff"
+      ],
+      "assertions": [
+        "Flags as100_remove() returning -EBUSY and states that platform driver .remove callbacks return void on current mainline (since v6.11), so the error cannot be propagated",
+        "Flags strcpy() into st->name and recommends strscpy()",
+        "Flags the raw ioremap() of the platform resource and recommends devm_platform_ioremap_resource() or devm_ioremap_resource()",
+        "Flags gpio_request()/gpio_direction_output()/gpio_free() and recommends the descriptor API, for example devm_gpiod_get() with <linux/gpio/consumer.h>",
+        "Flags pm_runtime_enable() without a matching disable on the error and remove paths and recommends devm_pm_runtime_enable() or explicit pm_runtime_disable()",
+        "Recommends running scripts/checkpatch.pl --strict on the patch"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "This is our board support tree (attached as e4-bsp-tree/). The fan on the EVB never spins. I already put CONFIG_SENSORS_PWM_FAN=y in the board fragment, and I think the fan node belongs in acme-soc.dtsi next to pwm1. Can you fix both and tell me how to verify?",
+      "expected_output": "The fan node, the pwm1 enable and the thermal cooling map go in the board DTS through label references, acme-soc.dtsi stays untouched, the missing CONFIG_PWM dependency is found in the resolved out/.config and fixed in the board fragment, and every command goes through the documented ./build.sh wrapper.",
+      "files": [
+        "evals/files/e4-bsp-tree/README.md",
+        "evals/files/e4-bsp-tree/build.sh",
+        "evals/files/e4-bsp-tree/arch/arm64/boot/dts/acme/acme-soc.dtsi",
+        "evals/files/e4-bsp-tree/arch/arm64/boot/dts/acme/acme-soc-evb.dts",
+        "evals/files/e4-bsp-tree/arch/arm64/configs/acme_defconfig",
+        "evals/files/e4-bsp-tree/arch/arm64/configs/acme-evb.config",
+        "evals/files/e4-bsp-tree/drivers/hwmon/Kconfig",
+        "evals/files/e4-bsp-tree/out/.config"
+      ],
+      "assertions": [
+        "acme-soc.dtsi is not modified; the pwm-fan node and the pwm1 enable are added to acme-soc-evb.dts",
+        "pwm1 is enabled with a label reference (&pwm1 { status = \"okay\"; }) instead of redefining the node",
+        "The fan is tied to the thermal zone from the board file, through a cooling-maps entry under &soc_thermal that references soc_warm",
+        "Identifies from out/.config that CONFIG_SENSORS_PWM_FAN is absent because CONFIG_PWM is not set, using the depends on PWM line in drivers/hwmon/Kconfig",
+        "Adds CONFIG_PWM=y and CONFIG_PWM_ACME to acme-evb.config and does not edit the shared acme_defconfig",
+        "Every config, build and DT check command uses ./build.sh (kconfig, kernel, dtbs-check); no direct make invocation is proposed for this tree",
+        "Verification regenerates out/.config with ./build.sh kconfig and checks that CONFIG_SENSORS_PWM_FAN is set there, not only in the fragment"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Here is my fix for a NULL dereference in drivers/hwmon/acme-fan.c (attached as e5-acme-fan-null-tach.diff). It fixes a crash when the tachometer region is missing from DT, introduced by commit 4b1d2e3f5a6c (\"hwmon: acme-fan: add tachometer support\"). Write the full commit message so I can format-patch it and send it to the hwmon list. I'm Jane Doe <jane@example.com>.",
+      "expected_output": "A commit message with an hwmon subject prefix, a body explaining the crash, a Fixes: tag for 4b1d2e3f5a6c, and an Assisted-by: trailer whose format is taken from Documentation/process/coding-assistants.rst (mainline's, or the target tree's copy when it has one). The agent writes no Signed-off-by: line itself and tells Jane to add her own after reviewing.",
+      "files": [
+        "evals/files/e5-acme-fan-null-tach.diff"
+      ],
+      "assertions": [
+        "The subject line starts with hwmon:",
+        "The commit message contains Fixes: 4b1d2e3f5a6c (\"hwmon: acme-fan: add tachometer support\")",
+        "The commit message contains an Assisted-by: trailer",
+        "The response names Documentation/process/coding-assistants.rst (mainline, or the target tree's copy when it has one) as the source of the Assisted-by: format",
+        "The agent writes no Signed-off-by: line, including none for Jane Doe, and tells her to add her own sign-off (for example with git commit -s) after reviewing the patch"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Add a 500 ms polling timer to drivers/hwmon/acme-fan.c that re-reads the tach counter into fan->rpm, and make sure it is stopped on remove. This is our product tree (attached as e6-lts-tree/), based on an older LTS.",
+      "expected_output": "A change that uses only the timer API this tree declares (timer_setup, mod_timer, from_timer, del_timer_sync), keeps the int-returning .remove callback, and stops the timer in remove(). Newer mainline names are avoided because the tree's headers do not declare them.",
+      "files": [
+        "evals/files/e6-lts-tree/Makefile",
+        "evals/files/e6-lts-tree/include/linux/timer.h",
+        "evals/files/e6-lts-tree/drivers/hwmon/acme-fan.c"
+      ],
+      "assertions": [
+        "Reads the fixture's Makefile or include/linux/timer.h, or states that it greps the tree, before choosing timer APIs",
+        "Every timer API used is declared in the fixture's include/linux/timer.h: timer_setup(), mod_timer(), from_timer() and del_timer_sync()",
+        "Does not use timer_delete_sync(), timer_delete(), timer_container_of(), timer_shutdown_sync() or hrtimer_setup()",
+        "Keeps the int-returning .remove callback and does not convert it to a void .remove or to .remove_new",
+        "Calls del_timer_sync() on the timer in acme_fan_remove()"
+      ]
+    }
+  ]
+}

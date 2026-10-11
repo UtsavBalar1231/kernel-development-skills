@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: neg-userspace-makefile
+description: 'Near miss, should not trigger. Makefile for a userspace C project.'
+tags: [trigger, should-not-trigger, train]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'write a Makefile for my small C project: sources in src/*.c, headers in include/, build a static lib plus a test binary, debug and release targets, and auto-generated header dependencies. GNU make, no cmake pls'
+graders:
+  - name: skill-not-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'
+    min: 0
+    max: 0
+    arm: both

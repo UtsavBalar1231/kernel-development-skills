@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: neg-ebpf-go-service
+description: 'Near miss, should not trigger. Userspace Go service loading a prebuilt eBPF program.'
+tags: [trigger, should-not-trigger, validation]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'I''m writing a Go service that loads a prebuilt eBPF program with cilium/ebpf and reads events from a ring buffer. It works as root but map reads fail with EPERM in a non-root container. What capabilities does the container need?'
+graders:
+  - name: skill-not-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'
+    min: 0
+    max: 0
+    arm: both

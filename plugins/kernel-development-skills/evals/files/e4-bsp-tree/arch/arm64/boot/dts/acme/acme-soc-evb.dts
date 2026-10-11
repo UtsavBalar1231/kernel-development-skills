@@ -1,0 +1,14 @@
+// SPDX-License-Identifier: (GPL-2.0-only OR MIT)
+
+/dts-v1/;
+
+#include "acme-soc.dtsi"
+
+/ {
+	model = "Acme SoC EVB";
+	compatible = "acme,soc-evb", "acme,soc";
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+};

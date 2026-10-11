@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: neg-ci-pthread-link
+description: 'Near miss, should not trigger. Userspace C++ link failure in CI.'
+tags: [trigger, should-not-trigger, validation]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'Our GitHub Actions job for a C++ project fails on ubuntu-latest with `undefined reference to pthread_create` but builds fine on my Mac. CMake 3.28. What''s the portable fix?'
+graders:
+  - name: skill-not-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'
+    min: 0
+    max: 0
+    arm: both

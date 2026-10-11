@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: pos-send-series-maintainers
+description: 'Should trigger. First upstream series: recipients and ordering.'
+tags: [trigger, should-trigger, validation]
+execution:
+  model: sonnet
+  max_turns: 4
+  timeout_seconds: 180
+  allowed_tools: [Skill, Read, Glob, Grep]
+  prompt: 'first time sending a 3-patch series upstream: a hwmon driver, its binding yaml, and the board dts change. how do I work out the To/Cc list with get_maintainer.pl and what order should the patches go in? should I use b4 or plain git send-email'
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?kernel-development-skills"'

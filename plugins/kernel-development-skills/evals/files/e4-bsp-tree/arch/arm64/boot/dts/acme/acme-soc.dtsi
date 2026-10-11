@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: (GPL-2.0-only OR MIT)
+
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/thermal/thermal.h>
+
+/ {
+	compatible = "acme,soc";
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	thermal-zones {
+		soc_thermal: soc-thermal {
+			polling-delay-passive = <100>;
+			polling-delay = <1000>;
+			thermal-sensors = <&tsadc 0>;
+
+			trips {
+				soc_warm: soc-warm {
+					temperature = <65000>;
+					hysteresis = <2000>;
+					type = "active";
+				};
+			};
+		};
+	};
+
+	soc {
+		compatible = "simple-bus";
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		pwm1: pwm@fe8b0000 {
+			compatible = "acme,soc-pwm";
+			reg = <0x0 0xfe8b0000 0x0 0x1000>;
+			#pwm-cells = <3>;
+			status = "disabled";
+		};
+
+		tsadc: tsadc@fe8c0000 {
+			compatible = "acme,soc-tsadc";
+			reg = <0x0 0xfe8c0000 0x0 0x1000>;
+			interrupts = <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>;
+			#thermal-sensor-cells = <1>;
+		};
+	};
+};
