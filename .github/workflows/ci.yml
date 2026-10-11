@@ -180,5 +180,6 @@ jobs:
           node-version: "22"
       - name: npx skills finds exactly one public skill
         run: |
-          npx --yes skills@1.7.2 add . --list | tee "$RUNNER_TEMP/list.txt"
+          # The CLI colors its output under CI; strip ANSI escapes before matching.
+          npx --yes skills@1.7.2 add . --list | sed 's/\x1b\[[0-9;?]*[a-zA-Z]//g' | tee "$RUNNER_TEMP/list.txt"
           grep -q 'Found 1 skill' "$RUNNER_TEMP/list.txt"
