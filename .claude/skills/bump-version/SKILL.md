@@ -3,6 +3,8 @@ name: bump-version
 description: Sets the kernel-development-skills version in all eight manifest and SKILL.md locations, then validates. Use when releasing or when asked to bump or change the plugin version.
 disable-model-invocation: true
 argument-hint: <x.y.z>
+metadata:
+  internal: true
 ---
 
 Bump the plugin version to `$ARGUMENTS`. Run every step from the repository root.
