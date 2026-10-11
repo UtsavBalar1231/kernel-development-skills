@@ -19,9 +19,10 @@ it.
   `metadata`, and `allowed-tools`, because the Codex validator rejects any
   other key. Keep the description at or under 1024 characters with no `<` or
   `>`.
-- Put detailed kernel guidance in one-level `references/` files (a table of
-  contents when over 100 lines, no pointers between reference files) and
-  deterministic helpers in `scripts/`.
+- Put detailed kernel guidance in one-level `references/` files and
+  deterministic helpers in `scripts/`. A reference over 100 lines opens with a
+  `Covers:` line naming its `##` sections in order, so a partial read still
+  shows the whole scope; no pointers between reference files.
 - Keep the skill generic: no vendor-, board-, or product-specific content, and
   no local absolute paths or machine-specific assumptions in shipped files.
 - Keep the skill directory lean. Evals live in

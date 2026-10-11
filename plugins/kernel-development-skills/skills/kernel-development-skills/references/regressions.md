@@ -1,9 +1,11 @@
 # Regressions and bot reports
 
-Something that worked broke, and a person, a bot, or CI said so. This file
-covers deciding whether it is real and yours, reverting, the fix deadlines,
-the tags, regzbot, reporting, the kernel test robot, syzbot, KernelCI, and
-flaky failures.
+Something that worked broke, and a person, a bot, or CI said so.
+
+Covers: is it real, and is it yours; find the culprit, then consider reverting
+it; deadlines once the culprit is known; tags on a regression fix; regzbot;
+reporting a regression you found; kernel test robot (0-day, LKP); syzbot;
+KernelCI; flaky failures.
 
 ## Is it real, and is it yours
 

@@ -1,2 +1,7 @@
 # Bundled scripts must run on the oldest python3 a kernel build host still ships.
 target-version = "py39"
+
+[lint]
+# Pinned to the long-standing default set: newer ruff defaults suggest
+# `X | None`, which the 3.9 floor cannot run outside annotations.
+select = ["E4", "E7", "E9", "F"]

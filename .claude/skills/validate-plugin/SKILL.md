@@ -54,8 +54,8 @@ Genericity and style (each grep should print nothing):
 
 ```bash
 grep -rnI '/home/\|/Users/' plugins/
-grep -rnI $'—\|–' --include='*.md' . --exclude-dir=.git --exclude-dir=.omca
-for f in $S/references/*.md; do [ $(wc -l <$f) -gt 100 ] && ! grep -qiE '^## (contents|table of contents)' $f && echo "no TOC: $f"; done
+grep -rnI $'—\|–' --include='*.md' plugins adapters README.md AGENTS.md CLAUDE.md SECURITY.md CONTRIBUTING.md CHANGELOG.md PRIVACY.md
+for f in $S/references/*.md; do [ $(wc -l <$f) -gt 100 ] && ! head -12 $f | grep -q '^Covers:' && echo "no Covers line: $f"; done
 ```
 
 Also check by reading the diff that no vendor-, board-, or product-specific content entered the skill. If `npx` is available and the network is up, `npx skills add . --list` should report one skill.

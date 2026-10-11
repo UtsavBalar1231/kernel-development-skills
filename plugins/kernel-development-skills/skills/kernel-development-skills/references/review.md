@@ -1,11 +1,12 @@
 # Reviewing a patch
 
-The order a maintainer reads a patch in, the bug classes reviewers catch again
-and again, devicetree and ABI review points, and the evidence to ask for.
-
 Assume the patch is wrong until the message and the code agree. Spend your
 attention where bugs live: error paths, teardown, concurrency, and anything
 userspace can see. The same pass applies to your own patch before it goes out.
+
+Covers: read it in this order; lifetime and teardown; context and locking;
+memory and DMA; userspace boundary; power and register state; references;
+devicetree and ABI; evidence to ask for; writing the review.
 
 ## Read it in this order
 

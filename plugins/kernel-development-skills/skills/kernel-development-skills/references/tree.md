@@ -3,10 +3,9 @@
 Every tree has its own rules for what to base on, how to build, and what you
 may change. Work out which one you are in before you edit anything.
 
-Covers: identifying the tree; mainline, linux-next, and subsystem trees; the
-release cycle; stable and LTS; Android common kernels; vendor BSP trees and
-build wrappers; config layering; vendor ABI coupling; someone else's dirty
-tree.
+Covers: identify it; mainline, linux-next, and subsystem trees; the release
+cycle; stable and LTS; Android common kernels; vendor BSP trees and build
+wrappers; config layering; vendor ABI coupling; someone else's dirty tree.
 
 ## Identify it
 

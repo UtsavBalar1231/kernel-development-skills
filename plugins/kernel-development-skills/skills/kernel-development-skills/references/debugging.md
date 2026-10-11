@@ -4,10 +4,10 @@ Start from what the kernel already told you. Keep the first splat, because
 everything after it is usually fallout. Reproduce before theorizing, and change
 one thing at a time.
 
-Symptoms: oops or panic; warnings and splats; device does not probe; hangs,
-lockups, and stalls; memory corruption; races; dies early in boot; suspend and
-resume; slow or high latency; worked before (bisect). Then: tracing toolbox,
-debug kernels, post-mortem.
+Covers: get the evidence first; oops or panic; warnings and splats; device does
+not probe; hangs, lockups, and stalls; memory corruption and use after free;
+races; dies early in boot; suspend and resume; slow or high latency; worked
+before: bisect; tracing toolbox; debug kernels; post-mortem.
 
 ## Get the evidence first
 

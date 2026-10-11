@@ -5,8 +5,10 @@ older kernel, so DT review is about the hardware, not your driver. Write the
 binding as if the driver did not exist, and the DTS as if all you had was the
 schematic.
 
-Covers: binding design and checks, DTS layering, overlays, what was really
-booted, phandle and interrupt mistakes, routing.
+Covers: binding design: what DT maintainers push back on; writing and checking
+a binding; DTS layering and style; overlays; what was really built and booted;
+phandles, interrupts, GPIOs, pinctrl: the usual mistakes; routing and series
+order.
 
 ## Binding design: what DT maintainers push back on
 

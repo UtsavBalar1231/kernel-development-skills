@@ -1,8 +1,10 @@
 # Build, configure, boot
 
-The edit, build, boot loop: getting the config you meant, building only what
-you touched, toolchains, booting in a VM, editor setup, the build checks
-reviewers expect, and vendor build wrappers.
+The loop between editing a file and booting the result.
+
+Covers: the resolved .config is the truth; build only what you touched; Rust;
+boot it in a VM; editor and navigation; build checks reviewers expect; vendor
+build wrappers.
 
 ## The resolved .config is the truth
 

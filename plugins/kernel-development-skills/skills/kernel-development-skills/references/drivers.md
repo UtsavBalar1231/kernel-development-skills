@@ -1,14 +1,16 @@
 # Writing driver code
 
-Execution context, probe and teardown order, what devres will not do, picking
-the subsystem, firmware properties, Kconfig, power management, errors, exports,
-and the API changes that matter by kernel version.
-
 Copy the newest well-reviewed driver in the same subsystem, not the oldest one
 that looks similar; old drivers carry patterns reviewers now reject. Anything
 below marked "since vX.Y" may not exist in your tree, so check it first with
 `git grep -n '<symbol>' include/` and fall back to what neighboring drivers in
 that tree do.
+
+Covers: know what can sleep where; probe in this order; teardown runs
+backwards, and devres runs last; use the subsystem, not a private interface;
+firmware properties and hardware truth; Kconfig and Makefile; power management;
+errors and logging; scoped cleanup; exports and namespaces; API changes by
+version; Rust drivers.
 
 ## Know what can sleep where
 

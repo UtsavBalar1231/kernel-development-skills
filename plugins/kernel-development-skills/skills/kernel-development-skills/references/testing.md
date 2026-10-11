@@ -1,9 +1,8 @@
 # Testing: proving it works
 
-Picking the test by what you need to prove, writing and running KUnit and
-kselftest, walking error paths with fault injection, reproducing fuzzer
-reports, testing drivers without the hardware, and the evidence a maintainer
-accepts.
+Covers: pick the test by what you are proving; writing a KUnit test; running
+KUnit; Kselftest; error paths with fault injection; fuzzing; testing a driver
+without its hardware; evidence a maintainer accepts; say what you did not test.
 
 ## Pick the test by what you are proving
 

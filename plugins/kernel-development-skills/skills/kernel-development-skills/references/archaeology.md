@@ -5,9 +5,9 @@ how the last person to solve this problem did it. The answer to "why is this
 here" is usually in a commit message or a mailing-list thread, and it is
 cheaper to read than to rediscover.
 
-Covers: why a line exists; when a symbol appeared or vanished; which release
-has a commit; following fixes; the thread behind a commit; searching lore; who
-owns the code; learning from another driver; looking across versions; finding
+Covers: why is this line here; when a symbol appeared or vanished; which
+release has it; following fixes; the thread behind a commit; searching lore;
+who owns this; learning from another driver; across versions; finding
 documentation.
 
 ## Why is this line here

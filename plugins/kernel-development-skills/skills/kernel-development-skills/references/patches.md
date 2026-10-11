@@ -1,10 +1,12 @@
 # Getting a patch merged
 
-What a maintainer checks before applying: series shape, subject prefix, commit
-message, tags, AI attribution, pre-send checks, sending with b4 or git, timing,
-revisions, and answering review. The receiving tree's
+What a maintainer checks before applying a patch. The receiving tree's
 `Documentation/process/submitting-patches.rst` wins where it disagrees with
 this file.
+
+Covers: series shape; subject line; commit message; tags; AI-assisted patches;
+checks before sending; sending; timing and revisions; answering review;
+published history.
 
 ## Series shape
 

@@ -1,9 +1,10 @@
 # Stable, backports, and security fixes
 
-Fixes for kernels people already run. This file covers what stable takes, how
-to get a fix there, what the stable mail traffic means, checking whether a fix
-already landed, backporting by hand, vendor and LTS intake, and security bugs
-and CVEs.
+Fixes for kernels people already run.
+
+Covers: does it belong in stable; getting a fix there; stable mail you will
+get; is the fix already there; backporting; vendor and LTS intake; security
+bugs.
 
 ## Does it belong in stable
 
