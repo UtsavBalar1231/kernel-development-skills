@@ -1,4 +1,4 @@
 interface:
-  display_name: "Kernel Development Skills"
-  short_description: "Linux kernel driver, devicetree, debug, test, and patch workflows"
+  display_name: "Kernel Field Guide"
+  short_description: "Linux kernel dev workflows"
   default_prompt: "Use $kernel-development-skills to plan and verify a Linux kernel driver or device-tree change."

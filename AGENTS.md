@@ -1,4 +1,4 @@
-# Kernel development skills plugin
+# Kernel Field Guide plugin
 
 ## Repository purpose
 

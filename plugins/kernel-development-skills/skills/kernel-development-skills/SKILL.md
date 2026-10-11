@@ -6,7 +6,7 @@ metadata:
   version: "0.4.0"
 ---
 
-# Kernel development skills
+# Kernel field guide
 
 How experienced kernel engineers change, debug, and upstream Linux kernel code,
 in mainline and in the stable, LTS, and vendor trees people actually ship.

@@ -1,10 +1,15 @@
-# Kernel Development Skills
+# Kernel Field Guide
 
-An [Agent Skill](https://agentskills.io) that teaches coding agents to work on
-the Linux kernel the way experienced kernel engineers do: drivers, devicetree,
-Kconfig, debugging, testing, patch submission, regressions, and stable, LTS,
-and vendor trees. One portable directory, packaged for Claude Code, Codex,
-GitHub Copilot, Cursor, Gemini CLI, and 20+ other harnesses.
+[![ci](https://github.com/UtsavBalar1231/kernel-development-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/UtsavBalar1231/kernel-development-skills/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/v/release/UtsavBalar1231/kernel-development-skills)](https://github.com/UtsavBalar1231/kernel-development-skills/releases)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+An [Agent Skill](https://agentskills.io), installed as
+`kernel-development-skills`, that teaches coding agents to work on the Linux®
+kernel the way experienced kernel engineers do: drivers, devicetree, Kconfig,
+debugging, testing, patch submission, regressions, and stable, LTS, and vendor
+trees. One portable directory, packaged for Claude Code, Codex, GitHub Copilot,
+Cursor, Gemini CLI, and 20+ other harnesses.
 
 > [!TIP]
 > Any harness, one line:
@@ -186,6 +191,11 @@ is kept in `research/sources.tsv` and is never loaded at runtime.
 
 </details>
 
-## License
+## License and trademarks
 
-MIT
+MIT. The skill collects no data and makes no network calls; see
+[`PRIVACY.md`](PRIVACY.md) and [`SECURITY.md`](SECURITY.md).
+
+Linux® is the registered trademark of Linus Torvalds in the U.S. and other
+countries. This project is not affiliated with or endorsed by the Linux
+Foundation or the kernel maintainers.

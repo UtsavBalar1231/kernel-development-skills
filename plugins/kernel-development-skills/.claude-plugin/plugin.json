@@ -1,6 +1,6 @@
 {
   "name": "kernel-development-skills",
-  "displayName": "Kernel Development Skills",
+  "displayName": "Kernel Field Guide",
   "version": "0.4.0",
   "description": "Linux kernel development the way experienced kernel engineers work: drivers, devicetree, Kconfig, debugging by symptom, testing, patch review and submission, regressions and bot reports, and stable, LTS, and vendor kernel trees.",
   "author": {
@@ -22,5 +22,9 @@
     "stable",
     "lts",
     "vendor-kernel"
-  ]
+  ],
+  "icon": "./assets/icon.svg",
+  "documentationUrl": "https://github.com/UtsavBalar1231/kernel-development-skills#readme",
+  "supportUrl": "https://github.com/UtsavBalar1231/kernel-development-skills/issues",
+  "privacyPolicyUrl": "https://github.com/UtsavBalar1231/kernel-development-skills/blob/main/PRIVACY.md"
 }

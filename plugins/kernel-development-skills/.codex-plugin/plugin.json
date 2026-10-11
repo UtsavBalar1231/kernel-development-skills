@@ -24,9 +24,9 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Kernel Development Skills",
-    "shortDescription": "Linux kernel driver, devicetree, debug, test, and patch workflows",
-    "longDescription": "Use Kernel Development Skills for Linux kernel work in any tree, the way experienced kernel engineers do it: driver code and teardown order, devicetree bindings and DTS, Kconfig, debugging by symptom (oopses, splats, hangs, no probe), KUnit and kselftest, patch review and submission with correct tags, regression and bot reports (syzbot, kernel test robot, KernelCI), and stable, LTS, Android, and vendor trees.",
+    "displayName": "Kernel Field Guide",
+    "shortDescription": "Linux kernel dev workflows",
+    "longDescription": "Use Kernel Field Guide for Linux kernel work in any tree, the way experienced kernel engineers do it: driver code and teardown order, devicetree bindings and DTS, Kconfig, debugging by symptom (oopses, splats, hangs, no probe), KUnit and kselftest, patch review and submission with correct tags, regression and bot reports (syzbot, kernel test robot, KernelCI), and stable, LTS, Android, and vendor trees.",
     "developerName": "utsavbalar1231",
     "category": "Developer Tools",
     "capabilities": [
@@ -39,6 +39,11 @@
       "Review a devicetree binding and DTS update.",
       "Debug a kernel CI or regression failure."
     ],
-    "brandColor": "#2563EB"
+    "brandColor": "#2563EB",
+    "websiteURL": "https://github.com/UtsavBalar1231/kernel-development-skills",
+    "privacyPolicyURL": "https://github.com/UtsavBalar1231/kernel-development-skills/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/UtsavBalar1231/kernel-development-skills/blob/main/LICENSE",
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/icon.svg"
   }
 }
