@@ -1,1 +1,2 @@
 - [Kernel skill voice and README layout](feedback_kernel_skill_voice.md) — situation-named references in practitioner voice; collapsible GitHub READMEs
+- [Publishing channels](project_publishing_channels.md) — where the plugin is submitted, pinned listings to update each release, maintainer-only portals
