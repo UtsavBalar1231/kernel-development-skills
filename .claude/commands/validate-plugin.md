@@ -1,8 +1,5 @@
 ---
-name: validate-plugin
 description: Runs this repository's full validation suite for the kernel-development-skills plugin (Claude and Codex validators, script compile and help checks, version consistency, description limits, and genericity and style greps). Use before calling any packaging, manifest, SKILL.md, reference, or script change done.
-metadata:
-  internal: true
 ---
 
 Run each block from the repository root and report every command with its exit code. Report failures; do not paper over them.
