@@ -332,6 +332,13 @@ CODE_RULES = (
 )
 
 
+def git_revision(value: str) -> str:
+    # git parses a leading dash as an option, and --output=FILE would write a file.
+    if not value or value.startswith("-"):
+        raise argparse.ArgumentTypeError(f"not a git revision: {value!r}")
+    return value
+
+
 def git_changed_paths(against: Optional[str] = None) -> list[str]:
     if against:
         commands: tuple[tuple[str, ...], ...] = (
@@ -417,6 +424,7 @@ def main() -> int:
     parser.add_argument(
         "--against",
         metavar="REV",
+        type=git_revision,
         help="scan files changed since REV (e.g. HEAD~1, origin/master) instead of the working tree diff",
     )
     parser.add_argument("--strict", action="store_true", help="exit 1 when any finding is reported")

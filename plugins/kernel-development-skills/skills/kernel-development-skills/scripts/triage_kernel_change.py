@@ -46,6 +46,13 @@ class Triage:
     notes: list[str] = field(default_factory=list)
 
 
+def git_revision(value: str) -> str:
+    # git parses a leading dash as an option, and --output=FILE would write a file.
+    if not value or value.startswith("-"):
+        raise argparse.ArgumentTypeError(f"not a git revision: {value!r}")
+    return value
+
+
 def git_changed_paths(against: Optional[str] = None) -> list[str]:
     if against:
         commands = [["git", "diff", against, "--name-only", "--diff-filter=ACMRT"]]
@@ -295,6 +302,7 @@ def main() -> int:
     parser.add_argument(
         "--against",
         metavar="REV",
+        type=git_revision,
         help="use files changed since REV (e.g. HEAD~1, origin/master) instead of the working tree diff",
     )
     args = parser.parse_args()
