@@ -1,6 +1,5 @@
-# Generated local documentation indexes
-plugins/*/skills/*/assets/kernel-doc-index.jsonl
-plugins/*/skills/*/assets/kernel-doc-routes.md
+# Skill-creator eval workspaces
+*-workspace/
 
 # Python bytecode and local caches
 __pycache__/

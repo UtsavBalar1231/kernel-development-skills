@@ -1,27 +1,32 @@
 {
   "name": "kernel-development-skills",
-  "version": "0.3.0",
-  "description": "Linux kernel driver API, debugging, testing, review, devicetree, stable, and vendor/LTS workflows packaged as an Agent Skill.",
+  "version": "0.4.0",
+  "description": "Linux kernel development the way experienced kernel engineers work: drivers, devicetree, Kconfig, debugging by symptom, testing, patch review and submission, regressions and bot reports, and stable, LTS, and vendor kernel trees.",
   "author": {
     "name": "utsavbalar1231",
     "email": "utsavbalar1231@gmail.com"
   },
+  "homepage": "https://github.com/UtsavBalar1231/kernel-development-skills",
+  "repository": "https://github.com/UtsavBalar1231/kernel-development-skills",
   "license": "MIT",
   "keywords": [
     "linux-kernel",
+    "kernel-drivers",
     "devicetree",
-    "drivers",
+    "kconfig",
     "debugging",
     "kunit",
     "kselftest",
+    "patch-submission",
     "stable",
+    "lts",
     "vendor-kernel"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Kernel Development Skills",
-    "shortDescription": "Linux kernel driver API, debug, review, and test practice",
-    "longDescription": "Use Kernel Development Skills for Linux kernel and kernel-adjacent work: driver API choices, Kconfig, devicetree bindings and DTS, debugging, tracing, CI failures, KUnit, kselftest, stable and regression handling, maintainer routing, and vendor/LTS maintenance.",
+    "shortDescription": "Linux kernel driver, devicetree, debug, test, and patch workflows",
+    "longDescription": "Use Kernel Development Skills for Linux kernel work in any tree, the way experienced kernel engineers do it: driver code and teardown order, devicetree bindings and DTS, Kconfig, debugging by symptom (oopses, splats, hangs, no probe), KUnit and kselftest, patch review and submission with correct tags, regression and bot reports (syzbot, kernel test robot, KernelCI), and stable, LTS, Android, and vendor trees.",
     "developerName": "utsavbalar1231",
     "category": "Developer Tools",
     "capabilities": [

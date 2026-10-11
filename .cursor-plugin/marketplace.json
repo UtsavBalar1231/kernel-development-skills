@@ -1,0 +1,38 @@
+{
+  "name": "kernel-development-skills",
+  "owner": {
+    "name": "utsavbalar1231",
+    "email": "utsavbalar1231@gmail.com"
+  },
+  "metadata": {
+    "description": "Linux kernel development skills for Cursor.",
+    "version": "0.4.0"
+  },
+  "plugins": [
+    {
+      "name": "kernel-development-skills",
+      "source": "./plugins/kernel-development-skills",
+      "description": "Linux kernel development the way experienced kernel engineers work: drivers, devicetree, Kconfig, debugging by symptom, testing, patch review and submission, regressions and bot reports, and stable, LTS, and vendor kernel trees.",
+      "version": "0.4.0",
+      "author": {
+        "name": "utsavbalar1231",
+        "email": "utsavbalar1231@gmail.com"
+      },
+      "license": "MIT",
+      "category": "development",
+      "keywords": [
+        "linux-kernel",
+        "kernel-drivers",
+        "devicetree",
+        "kconfig",
+        "debugging",
+        "kunit",
+        "kselftest",
+        "patch-submission",
+        "stable",
+        "lts",
+        "vendor-kernel"
+      ]
+    }
+  ]
+}

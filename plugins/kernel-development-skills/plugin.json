@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "kernel-development-skills",
+  "version": "0.4.0",
+  "description": "Linux kernel development the way experienced kernel engineers work: drivers, devicetree, Kconfig, debugging by symptom, testing, patch review and submission, regressions and bot reports, and stable, LTS, and vendor kernel trees.",
+  "author": {
+    "name": "utsavbalar1231",
+    "email": "utsavbalar1231@gmail.com"
+  },
+  "homepage": "https://github.com/UtsavBalar1231/kernel-development-skills",
+  "repository": "https://github.com/UtsavBalar1231/kernel-development-skills",
+  "license": "MIT",
+  "keywords": [
+    "linux-kernel",
+    "kernel-drivers",
+    "devicetree",
+    "kconfig",
+    "debugging",
+    "kunit",
+    "kselftest",
+    "patch-submission",
+    "stable",
+    "lts",
+    "vendor-kernel"
+  ]
+}
