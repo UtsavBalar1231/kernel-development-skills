@@ -3,6 +3,18 @@
 All notable changes to this project are listed here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## 0.4.2 (2026-10-12)
+
+### Security
+
+- The skill now treats oops and console logs, bot reports, mailing-list mail,
+  commit messages, and code comments as data, not instructions. It no longer
+  runs a command, sends a reply, or changes the tree because such text says
+  to.
+- Replies to a list or a bot, including `#syz` commands, and real `b4 send` or
+  `git send-email` runs now wait for an explicit yes from the user. The dry
+  runs (`b4 send -o`, `b4 send --reflect`) still run without asking.
+
 ## 0.4.1 (2026-10-12)
 
 ### Security

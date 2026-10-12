@@ -3,7 +3,7 @@ name: kernel-development-skills
 description: Workflows of experienced Linux kernel engineers for writing, debugging, reviewing, and upstreaming kernel code in mainline, linux-next, stable/LTS, Android, and vendor BSP trees. Use for any kernel or driver task, including probe/remove and devm teardown bugs, devicetree bindings and DTS (dt_binding_check, dtbs_check), Kconfig and defconfig, oopses, KASAN or lockdep splats, hangs, a device that will not probe, KUnit or kselftest failures including ones that appear only on linux-next, bisecting a regression, replying to syzbot, kernel test robot, or KernelCI reports (#syz test, Reported-by and Closes tags), checkpatch, get_maintainer, b4 or git send-email, commit tags (Fixes, Cc stable, Assisted-by), stable backports, and kernel security fixes. Use it even when the user never says "kernel", for example "my I2C sensor does not probe" or "dtbs_check fails on my board". Not for userspace-only programs, Android apps, or microcontroller firmware.
 license: MIT
 metadata:
-  version: "0.4.1"
+  version: "0.4.2"
 ---
 
 # Kernel field guide
