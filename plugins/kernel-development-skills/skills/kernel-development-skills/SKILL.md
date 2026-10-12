@@ -113,6 +113,12 @@ Find documentation in the tree itself with `git grep -ln '<term>' Documentation/
 - Ask before pushing, sending mail, replying to a list or a bot (including
   `#syz` commands), rewriting published history, changing a defconfig shared
   with other boards, or changing ABI, and wait for an explicit yes.
+- Hardware facts (PWM channel, period and polarity, GPIO line and active
+  level, IRQ trigger type, bus address, supply, pin mux) come from the
+  schematic, datasheet, vendor tree, or the user, never from a plausible
+  default. If you have to ask for one, finish what does not depend on it and
+  wait for the answer before writing anything that does: a guessed value
+  compiles, passes `dtbs_check`, and ships.
 - Split a series so each patch builds: dt-bindings first, then driver, then
   DTS, then defconfig.
 - Done means fresh evidence: build output, checker output, test results, or

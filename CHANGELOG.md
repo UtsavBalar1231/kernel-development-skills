@@ -12,6 +12,16 @@ All notable changes to this project are listed here. Versions follow
   post-patch line numbers, so a patch under review no longer has to be applied
   first. Mail headers, the commit message, and the signature are skipped.
 
+### Changed
+
+- A standing rule keeps guessed hardware facts out of a change: a PWM channel,
+  period, or polarity, a GPIO line or level, an IRQ trigger, a bus address, a
+  supply, or a pin mux comes from the schematic, a vendor tree, or the user.
+  An agent that had asked about a board's fan wiring still wrote an assumed
+  `pwms` specifier; it now finishes the parts that do not depend on the answer
+  and waits for it. `devicetree.md` lists where those facts usually live when
+  there is no schematic.
+
 ## 0.4.3 (2026-10-12)
 
 ### Security

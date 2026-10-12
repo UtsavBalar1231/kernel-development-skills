@@ -223,6 +223,14 @@ ARCH=arm64 scripts/dtc/dtx_diff -T arch/arm64/boot/dts/acme/acme-board.dts   # e
 - `pinctrl-names = "default", "sleep";` pairs with `pinctrl-0`, `pinctrl-1` in
   order. The core selects `default` itself (`init` first if present); `sleep`
   applies only when the driver calls `pinctrl_pm_select_sleep_state()`.
+- Every cell in a specifier is a fact about the board, not a default:
+  `pwms = <&pwm1 0 40000 0>` names a channel, a period in nanoseconds, and a
+  polarity flag. Without a schematic, look where someone already wrote them
+  down: the vendor's DTS for this or a sibling board, the bootloader's own
+  tree, or the live tree of a board running the vendor image (see "What was
+  really built and booted"). If none has the value, ask, and leave out
+  whatever needs it until the answer comes: a DTS that builds with a guessed
+  channel looks finished and ships.
 - `supply vdd not found, using dummy regulator` means the `vdd-supply` phandle
   is missing; acceptable only for a rail that really is always on.
 - The parent's `#address-cells` and `#size-cells` decide how `reg` parses:

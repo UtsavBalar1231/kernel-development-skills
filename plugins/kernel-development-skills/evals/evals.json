@@ -51,7 +51,7 @@
     {
       "id": 4,
       "prompt": "This is our board support tree (attached as e4-bsp-tree/). The fan on the EVB never spins. I already put CONFIG_SENSORS_PWM_FAN=y in the board fragment, and I think the fan node belongs in acme-soc.dtsi next to pwm1. Can you fix both and tell me how to verify?",
-      "expected_output": "The fan node, the pwm1 enable and the thermal cooling map go in the board DTS through label references, acme-soc.dtsi stays untouched, the missing CONFIG_PWM dependency is found in the resolved out/.config and fixed in the board fragment, and every command goes through the documented ./build.sh wrapper.",
+      "expected_output": "The fan node, the pwm1 enable and the thermal cooling map belong in the board DTS through label references and acme-soc.dtsi stays untouched, the missing CONFIG_PWM dependency is found in the resolved out/.config and fixed in the board fragment, the PWM channel, period and polarity are asked for instead of guessed because nothing in the tree gives them, and every command goes through the documented ./build.sh wrapper.",
       "files": [
         "evals/files/e4-bsp-tree/README.md",
         "evals/files/e4-bsp-tree/build.sh",
@@ -63,9 +63,10 @@
         "evals/files/e4-bsp-tree/out/.config"
       ],
       "assertions": [
-        "acme-soc.dtsi is not modified; the pwm-fan node and the pwm1 enable are added to acme-soc-evb.dts",
-        "pwm1 is enabled with a label reference (&pwm1 { status = \"okay\"; }) instead of redefining the node",
-        "The fan is tied to the thermal zone from the board file, through a cooling-maps entry under &soc_thermal that references soc_warm",
+        "acme-soc.dtsi is not modified; the pwm-fan node and the pwm1 enable go in acme-soc-evb.dts, either written there or proposed for it while the wiring question is open",
+        "pwm1 is enabled, or proposed to be enabled, with a label reference (&pwm1 { status = \"okay\"; }) instead of redefining the node",
+        "The fan is tied, or proposed to be tied, to the thermal zone from the board file, through a cooling-maps entry under &soc_thermal that references soc_warm",
+        "No guessed PWM channel, period or polarity is written into the DTS: the tree has no schematic, pwm1 declares #pwm-cells = <3>, and nothing supplies those values, so it asks for them and leaves the pwms specifier unwritten, or shows it with the open values named, until they are answered",
         "Identifies from out/.config that CONFIG_SENSORS_PWM_FAN is absent because CONFIG_PWM is not set, using the depends on PWM line in drivers/hwmon/Kconfig",
         "Adds CONFIG_PWM=y and CONFIG_PWM_ACME to acme-evb.config and does not edit the shared acme_defconfig",
         "Every config, build and DT check command uses ./build.sh (kconfig, kernel, dtbs-check); no direct make invocation is proposed for this tree",
