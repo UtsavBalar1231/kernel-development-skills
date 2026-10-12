@@ -160,8 +160,10 @@ newer (stdlib only).
   no paths are given). Exits 0; 2 only on bad arguments.
 - `scripts/check_kernel_api_patterns.py [--against REV] [--strict] [--json] [paths...]`:
   advisory scan for deprecated or risky driver APIs; each finding says which
-  kernel version it applies from. Exits 1 on findings with `--strict`, 2 on a
-  missing path or bad arguments.
+  kernel version it applies from. A path may also be a `.diff`, a
+  `git format-patch` `.patch`, or a b4 `.mbx`: only the lines it adds are
+  scanned, reported with post-patch line numbers. Exits 1 on findings with
+  `--strict`, 2 on a missing path or bad arguments.
 - `scripts/index_kernel_docs.py <kernel_root> [--out DIR]`: indexes the tree's
   `Documentation/` into a routes file and a JSONL index under a per-tree cache
   directory, then prints both paths. Query the JSONL with `rg` or `jq`; do not

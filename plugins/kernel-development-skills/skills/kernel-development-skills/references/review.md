@@ -37,8 +37,10 @@ make W=1 C=1 drivers/foo/foo.o                    # new warnings, sparse
 git rebase -x 'make -j"$(nproc)" drivers/foo/' <base>   # every commit builds
 ```
 
-The skill's `scripts/check_kernel_api_patterns.py <files>` flags deprecated
-APIs with the release each change landed in.
+The skill's `scripts/check_kernel_api_patterns.py <files or patch>` flags
+deprecated APIs with the release each change landed in. Give it the `.patch` or
+`b4 am` `.mbx` directly: it scans only the added lines and reports post-patch
+line numbers, so nothing needs to be applied first.
 
 ## Lifetime and teardown
 

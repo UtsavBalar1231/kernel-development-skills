@@ -63,6 +63,7 @@ jobs:
         run: |
           python3 "$S/scripts/triage_kernel_change.py" drivers/hwmon/acme-fan.c arch/arm64/boot/dts/acme/acme-soc.dtsi >/dev/null
           python3 "$S/scripts/check_kernel_api_patterns.py" "$P/evals/files/e6-lts-tree" --json >/dev/null
+          python3 "$S/scripts/check_kernel_api_patterns.py" "$P/evals/files/e3-acme-sensor.diff" --json | grep -q '"rule": "strcpy"'
 
   lint:
     runs-on: ubuntu-24.04

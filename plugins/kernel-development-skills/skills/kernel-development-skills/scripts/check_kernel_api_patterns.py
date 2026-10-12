@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Advisory scan of kernel C sources for deprecated or risky driver API patterns.
 
-Scans .c and .h files only; comments are stripped before matching, string
-literals are kept. Each message names the kernel version that introduced the
+Scans .c and .h files, or the lines a unified diff adds to them: pass a .diff,
+a git format-patch .patch, or a b4 .mbx, and findings carry post-patch line
+numbers. Comments are stripped before matching, string literals are kept; a
+diff hunk that opens inside a comment has no visible /*, so its comment text
+scans as code. Each message names the kernel version that introduced the
 replacement API, so check it against the tree you are working in: on an older
 tree the old API may still be the only option. Rules marked [heuristic] can
 fire on correct code and need a human look before changing anything.
@@ -23,6 +26,7 @@ from pathlib import Path
 from typing import Callable, Iterable, Iterator, Optional
 
 C_SUFFIXES = {".c", ".h"}
+PATCH_SUFFIXES = {".diff", ".patch", ".mbx"}
 SKIP_DIR_PARTS = {".git", ".agents", ".claude", ".codex-plugin", ".claude-plugin", "assets"}
 DRIVER_PATHS = ("drivers/",)
 
@@ -31,6 +35,7 @@ examples:
   check_kernel_api_patterns.py                      # files in the unstaged and staged diff
   check_kernel_api_patterns.py --against HEAD~3     # files changed since HEAD~3
   check_kernel_api_patterns.py drivers/hwmon/foo.c --json
+  check_kernel_api_patterns.py 0001-foo.patch       # lines a patch or b4 .mbx adds
 
 exit codes:
   0  scan completed (findings are advisory unless --strict)
@@ -396,7 +401,11 @@ def scan_file(path: Path) -> list[Finding]:
     normalized_path = path.as_posix()
     if normalized_path.startswith("./"):
         normalized_path = normalized_path[2:]
-    text = strip_comments(path.read_text(encoding="utf-8", errors="replace"))
+    return scan_text(path.read_text(encoding="utf-8", errors="replace"), normalized_path)
+
+
+def scan_text(raw: str, normalized_path: str) -> list[Finding]:
+    text = strip_comments(raw)
     findings: list[Finding] = []
     for number, line in enumerate(text.splitlines(), 1):
         if not line.strip():
@@ -414,13 +423,82 @@ def scan_file(path: Path) -> list[Finding]:
     return findings
 
 
+HUNK_RE = re.compile(r"@@ -\d+(?:,(\d+))? \+(\d+)(?:,(\d+))? @@")
+
+
+def patch_target(header: str) -> Optional[str]:
+    name = header[4:].split("\t", 1)[0].strip()
+    if name == "/dev/null":
+        return None
+    # Drop git's a/ b/ (or mnemonic i/ w/) prefix; no kernel top-level directory is one letter.
+    return re.sub(r"^[a-z]/", "", name)
+
+
+def patch_hunks(text: str) -> Iterator[tuple[str, int, list[str], set[int]]]:
+    """Yield (path, first new line, new-side lines, added line numbers) per hunk.
+
+    Hunk bodies are bounded by the @@ line counts, so mail headers and the
+    "-- " signature in a format-patch file or b4 mbox are never read as diff.
+    """
+    lines = text.splitlines()
+    path: Optional[str] = None
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if line.startswith("--- ") and index + 1 < len(lines) and lines[index + 1].startswith("+++ "):
+            path = patch_target(lines[index + 1])
+            index += 2
+            continue
+        match = HUNK_RE.match(line)
+        index += 1
+        if not match or path is None:
+            continue
+        old_left = int(match.group(1) or "1")
+        start = number = int(match.group(2))
+        new_left = int(match.group(3) or "1")
+        body: list[str] = []
+        added: set[int] = set()
+        while index < len(lines) and (old_left > 0 or new_left > 0):
+            tag = lines[index][:1]  # "" is a context line whose trailing space was stripped
+            if tag not in ("+", "-", " ", "", "\\"):
+                break
+            if tag in ("-", " ", ""):
+                old_left -= 1
+            if tag in ("+", " ", ""):
+                if tag == "+":
+                    added.add(number)
+                body.append(lines[index][1:])
+                number += 1
+                new_left -= 1
+            index += 1
+        yield path, start, body, added
+
+
+def scan_patch(patch: Path) -> tuple[set[str], list[Finding]]:
+    files: set[str] = set()
+    findings: list[Finding] = []
+    for path, start, body, added in patch_hunks(patch.read_text(encoding="utf-8", errors="replace")):
+        if Path(path).suffix not in C_SUFFIXES:
+            continue
+        files.add(path)
+        for finding in scan_text("\n".join(body), path):
+            line = start + finding.line - 1
+            if line in added:
+                findings.append(Finding(path, line, finding.rule, finding.message, finding.heuristic))
+    return files, findings
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=__doc__,
         epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument("paths", nargs="*", help="files or directories to scan (default: git diff paths)")
+    parser.add_argument(
+        "paths",
+        nargs="*",
+        help="files, directories, or .diff/.patch/.mbx files to scan (default: git diff paths)",
+    )
     parser.add_argument(
         "--against",
         metavar="REV",
@@ -444,17 +522,23 @@ def main() -> int:
     raw_paths = args.paths or git_changed_paths(args.against)
     paths = expand_paths(raw_paths)
     findings = [finding for path in paths for finding in scan_file(path)]
+    scanned = len(paths)
+    for raw in args.paths:
+        if Path(raw).is_file() and Path(raw).suffix in PATCH_SUFFIXES:
+            patch_files, patch_findings = scan_patch(Path(raw))
+            scanned += len(patch_files)
+            findings.extend(patch_findings)
 
     if args.json:
         print(json.dumps([asdict(finding) for finding in findings], indent=2))
-        if not paths:
+        if not scanned:
             print("note: no .c or .h files to scan", file=sys.stderr)
     elif not raw_paths:
         print("No changed paths were found. Pass files or directories explicitly, or use --against REV.")
-    elif not paths:
+    elif not scanned:
         print("No .c or .h files to scan.")
     elif not findings:
-        print(f"No advisory kernel API pattern findings in {len(paths)} file(s).")
+        print(f"No advisory kernel API pattern findings in {scanned} file(s).")
     else:
         print("Advisory kernel API pattern findings:")
         for finding in findings:

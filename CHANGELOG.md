@@ -3,6 +3,15 @@
 All notable changes to this project are listed here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## Unreleased
+
+### Added
+
+- `check_kernel_api_patterns.py` reads a `.diff`, a `git format-patch`
+  `.patch`, or a b4 `.mbx` and scans only the lines it adds, reporting
+  post-patch line numbers, so a patch under review no longer has to be applied
+  first. Mail headers, the commit message, and the signature are skipped.
+
 ## 0.4.3 (2026-10-12)
 
 ### Security
