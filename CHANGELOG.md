@@ -3,6 +3,26 @@
 All notable changes to this project are listed here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## 0.4.3 (2026-10-12)
+
+### Security
+
+- Two references still told the agent to act on text from a mail. On a stable
+  "FAILED: patch" notice they said to follow its commands, which end with
+  `git commit -s` and `git send-email`. On a kernel test robot report they
+  said to run its reproduce commands, which switch branches and download a
+  toolchain. Both now read that text as data and work in a separate worktree
+  so the current branch stays as it was. The backport's sign-off and send are
+  left to the human submitter, and the robot's `reproduce` file runs only
+  after an explicit yes.
+- regzbot commands, `kci-dev checkout` test submissions, and stable backport
+  sends now carry the explicit-yes rule where the references give them.
+
+### Changed
+
+- The plugin README's syzbot example asks for a drafted `#syz test` reply
+  instead of a sent one.
+
 ## 0.4.2 (2026-10-12)
 
 ### Security

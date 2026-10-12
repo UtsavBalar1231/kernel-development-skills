@@ -10,7 +10,7 @@
       "name": "kernel-development-skills",
       "source": "./plugins/kernel-development-skills",
       "description": "Linux kernel development the way experienced kernel engineers work: drivers, devicetree, Kconfig, debugging by symptom, testing, patch review and submission, regressions and bot reports, and stable, LTS, and vendor kernel trees.",
-      "version": "0.4.2",
+      "version": "0.4.3",
       "author": {
         "name": "utsavbalar1231",
         "email": "utsavbalar1231@gmail.com"
