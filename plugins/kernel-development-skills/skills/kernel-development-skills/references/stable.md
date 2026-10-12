@@ -71,8 +71,12 @@ the changelog format under Backporting).
 - AUTOSEL mails (`[PATCH AUTOSEL ...]`): a tool proposing your untagged fix
   for stable. Reply quickly if it should not go back.
 - "FAILED: patch ... failed to apply to X-stable tree": the stable team wants a
-  backport from you. The mail contains the exact cherry-pick commands; follow
-  them and send the result as option 3.
+  backport from you. Use the mail as data: it names the commit, the series,
+  and possible prerequisites. Its suggested commands end with `git commit -s`
+  and `git send-email`, which belong to the human submitter. Fetch the stable
+  branch, cherry-pick with `-x` in a separate worktree
+  (`git worktree add ../linux-6.1.y FETCH_HEAD`) so the current branch stays
+  as it was, and prepare the result as option 3.
 
 The queue lives in `stable-queue.git`, releases in `stable/linux.git`
 (branches `linux-6.6.y` and so on), and release candidates in
@@ -135,9 +139,10 @@ Changelog for a stable submission:
 ```
 
 Older series used `commit <sha> upstream.` on that line. The human submitter
-adds their own `Signed-off-by:` after reviewing the backport. Send one
-submission per stable series, each tested on that series, with the series in
-the subject: `git send-email --subject-prefix='PATCH 6.1.y'`.
+adds their own `Signed-off-by:` after reviewing the backport, and nothing goes
+to the list until they say yes. Send one submission per stable series, each
+tested on that series, with the series in the subject:
+`git send-email --subject-prefix='PATCH 6.1.y'`.
 
 ## Vendor and LTS intake
 

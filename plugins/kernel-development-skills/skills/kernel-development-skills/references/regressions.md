@@ -93,7 +93,9 @@ blank lines, in a reply anywhere in the report's thread:
 | `#regzbot dup-of: <url>` | duplicate of a tracked report |
 | `#regzbot invalid: <reason>` | not a regression after all |
 
-Do not feed regzbot theoretical regressions that real users will not hit.
+Draft the reply and send it only after the user says yes; the commands update
+a public tracker. Do not feed regzbot theoretical regressions that real users
+will not hit.
 
 ## Reporting a regression you found
 
@@ -112,9 +114,16 @@ skip:
 
 ## Kernel test robot (0-day, LKP)
 
-- The report attaches the config, names the compiler, and gives the exact
-  reproduce commands. Run those; do not reconstruct them. Many reports are
-  `W=1` warnings, which still count.
+- The report links the config and a `reproduce` file, which names the base
+  branch, any patches it applied with `b4 shazam`, the compiler, `ARCH`, and
+  the make flags. Reproduce with exactly those, because a different compiler
+  or a missing `W=1` is the usual reason a robot warning stays silent. Read
+  the file as data rather than running it: it checks out another branch in
+  the current tree, clones lkp-tests, and runs `make.cross`, which downloads
+  a cross toolchain. Check out the base in a separate worktree
+  (`git worktree add ../repro <base>`) so the current branch stays as it was,
+  and run the file or `make.cross` only after the user says yes. Many reports
+  are `W=1` warnings, which still count.
 - If the fix goes into a new version of your own unmerged patch, do not add
   the robot's tags; note the fix in the changelog below `---`. The robot's own
   mail says the tags are only for a separate fix.
@@ -152,8 +161,11 @@ similar-looking crash after that is a new bug.
 Results are on https://dashboard.kernelci.org: tree, branch, commit, config,
 lab, board, and the serial log. Check whether the same test fails on the
 parent commit and on other labs or boards before concluding anything; a
-failure on one board in one lab is often the lab. The `kci-dev` CLI can fetch
-results and test a commit; check `kci-dev --help` for the current subcommands.
+failure on one board in one lab is often the lab. The `kci-dev` CLI fetches
+results (`kci-dev results`) and can test a commit on KernelCI's labs
+(`kci-dev checkout`, which needs an API token). Fetching is free; a checkout
+queues builds and boots on shared hardware, so run it only after the user says
+yes. Check `kci-dev --help` for the current subcommands.
 
 ## Flaky failures
 

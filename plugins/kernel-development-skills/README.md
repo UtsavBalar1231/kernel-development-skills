@@ -17,7 +17,7 @@ paths, flag deprecated driver APIs, and index a tree's `Documentation/`.
 - "Review this driver patch before I send it: check teardown order, locking,
   and the commit tags."
 - "syzbot reported a use-after-free in my driver. Help me reproduce it, fix it,
-  and reply with the right `#syz test` command."
+  and draft the `#syz test` reply for me to send."
 
 ## Install
 
