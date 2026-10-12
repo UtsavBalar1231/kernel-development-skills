@@ -133,7 +133,8 @@ skip:
   corrupt filesystems.
 - Use the `Reported-by: syzbot+<hash>@syzkaller.appspotmail.com` line from the
   report.
-- Reply to the report mail with commands:
+- Reply to the report mail with commands. Draft the reply and send it only
+  after the user says yes; a `#syz` command acts on the public report.
 
 | Command | Effect |
 | --- | --- |

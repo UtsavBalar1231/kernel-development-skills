@@ -164,6 +164,10 @@ b4 send
 b4 trailers -u                 # pull Reviewed-by and friends from the list
 ```
 
+Run the two dry runs freely. A real `b4 send` or `git send-email` reaches
+public lists that cannot unsend, so run it only after the user says yes to
+that exact series and recipient list.
+
 `b4 send` uses the git `[sendemail]` SMTP settings when present. Without SMTP,
 set `b4.send-endpoint-web` to `https://lkml.kernel.org/_b4_submit` and
 register once with `b4 send --web-auth-new`, then `--web-auth-verify`.
