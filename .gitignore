@@ -11,3 +11,6 @@ __pycache__/
 .DS_Store
 *.swp
 *.swo
+
+# Local walkthrough video project (Remotion, recordings, recorder); never shipped
+/demo/
