@@ -16,12 +16,14 @@ Cursor, Gemini CLI, and 20+ other harnesses.
 > `npx skills add UtsavBalar1231/kernel-development-skills -s kernel-development-skills -a <agent>`
 
 <details>
-<summary><b>Walkthrough video (85 seconds)</b></summary>
+<summary><b>Walkthrough video (2 min 40 s)</b></summary>
 
-Three real Codex sessions with the skill: a driver patch review, a board fan
-that never spins, and a syzbot report that carries an injected instruction.
+The install and three real Codex CLI sessions with the skill: a driver patch
+review, a board fan that never spins, and a syzbot report that carries an
+injected instruction. Recorded in a fresh Codex home with only this plugin
+installed; sped up where the video says so.
 
-https://github.com/user-attachments/assets/a46e406e-1066-4d71-aae3-c9604d7fcd7d
+https://github.com/user-attachments/assets/e6b773a1-d5bf-4a1c-8238-92714d599be2
 
 </details>
 
